@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Spike 001 — Nightly ↔ Cookie Chain round-trip</title>
+<style>
+  body { font-family: monospace; background: #14121a; color: #d8d4e0; margin: 2rem; max-width: 860px; }
+  h1 { font-size: 1.1rem; color: #ffb347; }
+  button { font: inherit; padding: .4rem 1rem; margin: .25rem .5rem .25rem 0; background: #ffb347; border: 0; border-radius: 6px; cursor: pointer; }
+  button:disabled { opacity: .4; cursor: default; }
+  pre { background: #1d1a26; border: 1px solid #3a3448; border-radius: 6px; padding: .75rem; white-space: pre-wrap; word-break: break-all; }
+  .ok { color: #7dd87d; } .err { color: #ff7d7d; } .warn { color: #ffd27d; }
+</style>
+</head>
+<body>
+<h1>Spike 001 — Nightly ↔ Cookie Chain ↔ RPC round-trip</h1>
+<p>RPC: https://rpc.cookiescan.io · memo "SPIKE" · 0-lamport self-transfer. Open with Nightly installed (Cookie Chain RPC).</p>
+<div>
+  <button id="b-detect">1. detect</button>
+  <button id="b-connect" disabled>2. connect</button>
+  <button id="b-send" disabled>3. sign+send</button>
+  <button id="b-verify" disabled>4. verify memo</button>
+</div>
+<pre id="log">log:</pre>
+<script type="module">
+// ponytail: spike is throwaway — CDN import OK here only; app code bundles locally.
+import { Connection, PublicKey, SystemProgram, Transaction, TransactionInstruction } from "https://esm.sh/@solana/web3.js@1.98.2";
+
+const RPC = "https://rpc.cookiescan.io";
+const MEMO_PID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"); // SPL Memo v2
+const conn = new Connection(RPC, "confirmed");
+const log = (msg, cls = "") => {
+  document.getElementById("log").textContent += `\n${cls ? `[${cls}] ` : ""}${msg}`;
+};
+const el = id => document.getElementById(id);
+
+let wallet = null;    // wallet-standard wallet object
+let provider = null;  // window.nightly?.solana legacy fallback
+let payer = null;     // PublicKey
+let signature = null;
+
+// ---- 1. detection -------------------------------------------------------
+el("b-detect").onclick = async () => {
+  try {
+    const wallets = window.getWallets?.() ?? [];
+    log(`wallet-standard getWallets(): ${wallets.length} found`);
+    for (const w of wallets) {
+      const feats = Object.keys(w.features ?? {});
+      log(`  - ${w.name} v${w.version ?? "?"} features: ${feats.join(", ")}`);
+      if (/nightly/i.test(w.name) && feats.includes("standard:signAndSendTransaction")) wallet = w;
+    }
+    const nightly = window.nightly?.solana;
+    log(`window.nightly?.solana: ${nightly ? `PRESENT (publicKey=${nightly.publicKey ? String(nightly.publicKey).slice(0, 8) + "…" : "none"}, isConnected=${nightly.isConnected})` : "absent"}`, nightly ? "ok" : "warn");
+    if (wallet) log(`picked wallet-standard wallet: ${wallet.name}`, "ok");
+    else if (nightly) { log("no wallet-standard registration → use direct window.nightly.solana", "warn"); provider = nightly; }
+    else { log("Nightly not detected — install extension, configure Cookie Chain RPC, reload.", "err"); return; }
+    el("b-connect").disabled = false;
+  } catch (e) { log(`detection error: ${e.message}`, "err"); }
+};
+
+// ---- 2. connect ---------------------------------------------------------
+el("b-connect").onclick = async () => {
+  try {
+    if (wallet) {
+      const feats = Object.keys(wallet.features);
+      const feature = feats.includes("standard:connect") ? "standard:connect" : feats.find(f => /connect/i.test(f));
+      log(`connect feature: "${feature}" (all: ${feats.join(", ")})`);
+      const res = await wallet.features[feature].connect({ silent: false });
+      const addr = res?.accounts?.[0]?.address;
+      if (!addr) throw new Error("connect returned no account address");
+      payer = new PublicKey(addr);
+      log(`connected (wallet-standard): ${addr}`, "ok");
+    } else {
+      await provider.connect();
+      payer = new PublicKey(String(provider.publicKey));
+      log(`connected (direct provider): ${payer.toBase58()}`, "ok");
+    }
+    el("b-send").disabled = false;
+  } catch (e) { log(`connect error: ${e.name ?? ""} ${e.message}`, "err"); }
+};
+
+// ---- 3. sign + send -----------------------------------------------------
+el("b-send").onclick = async () => {
+  try {
+    const { blockhash, lastValidBlockHeight } = await conn.getLatestBlockhash();
+    log(`blockhash ${blockhash.slice(0, 12)}… valid h=${lastValidBlockHeight}`);
+    const tx = new Transaction({ feePayer: payer, blockhash, lastValidBlockHeight }).add(
+      SystemProgram.transfer({ fromPubkey: payer, toPubkey: payer, lamports: 0 }),
+      new TransactionInstruction({ programId: MEMO_PID, keys: [], data: new TextEncoder().encode("SPIKE") }),
+    );
+    const t0 = performance.now();
+    if (wallet) {
+      // standard:signAndSendTransaction expects serialized message bytes
+      const out = await wallet.features["standard:signAndSendTransaction"].signAndSendTransaction({
+        account: wallet.accounts[0],
+        transaction: tx.serializeMessage(),
+        // chain omitted — quirk candidate: Nightly may demand its own chain id for Cookie Chain
+      });
+      signature = out.signature instanceof Uint8Array ? new TextDecoder().decode(out.signature) : out.signature;
+    } else {
+      const res = await provider.signAndSendTransaction(tx);
+      signature = typeof res === "string" ? res : res.signature;
+    }
+    log(`sent in ${Math.round(performance.now() - t0)}ms — signature: ${signature}`, "ok");
+    log(`explorer: https://cookiescan.io/tx/${signature}`);
+    el("b-verify").disabled = false;
+    poll();
+  } catch (e) {
+    log(`sign/send error: ${e.name ?? ""} ${e.message} ${e.data ? JSON.stringify(e.data) : ""}`, "err");
+  }
+};
+
+// ---- confirmation polling (S1 gate: < 1s) -------------------------------
+async function poll() {
+  const t0 = performance.now();
+  for (let i = 0; i < 30; i++) {
+    const st = await conn.getSignatureStatuses([signature]);
+    const s = st?.value?.[0];
+    if (s && ["confirmed", "finalized"].includes(s.confirmationStatus)) {
+      log(`confirmed ${s.confirmationStatus} in ${Math.round(performance.now() - t0)}ms, slot=${s.slot}`, "ok");
+      return;
+    }
+    await new Promise(r => setTimeout(r, 200));
+  }
+  log("confirmation timeout (6s)", "err");
+}
+
+// ---- 4. verify memo via getTransaction ----------------------------------
+el("b-verify").onclick = async () => {
+  try {
+    const txr = await conn.getTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
+    if (!txr) { log("getTransaction: not indexed yet — click again", "warn"); return; }
+    const memoLog = txr.meta?.logMessages?.find(l => l.includes("SPIKE"));
+    log(`getTransaction ok: slot=${txr.slot} fee=${txr.meta?.fee} lamports; memo: ${memoLog ?? "NOT FOUND"}`, memoLog ? "ok" : "err");
+    log(`fortune_idx math: ${txr.slot} mod 64 = ${txr.slot % 64}`);
+    log("VERDICT inputs collected — copy this log into spikes/001-nightly-connect/README.md", "ok");
+  } catch (e) { log(`verify error: ${e.message}`, "err"); }
+};
+</script>
+</body>
+</html>
