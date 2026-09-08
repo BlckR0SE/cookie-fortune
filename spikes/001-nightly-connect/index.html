@@ -21,7 +21,8 @@
   <button id="b-send" disabled>3. sign+send</button>
   <button id="b-verify" disabled>4. verify memo</button>
 </div>
-<pre id="log">log:</pre>
+<pre id="log">log:
+</pre>
 <script type="module">
 // ponytail: spike is throwaway — CDN import OK here only; app code bundles locally.
 import { Connection, PublicKey, SystemProgram, Transaction, TransactionInstruction } from "https://esm.sh/@solana/web3.js@1.98.2";
@@ -34,8 +35,8 @@ const log = (msg, cls = "") => {
 };
 const el = id => document.getElementById(id);
 
-let wallet = null;    // wallet-standard wallet object
-let provider = null;  // window.nightly?.solana legacy fallback
+let provider = null;  // window.nightly?.solana (direct — wallet-standard path dead, spike run 1)
+let account = null;   // NightlyAccount from features['standard:connect'] (or shimmed from legacy)
 let payer = null;     // PublicKey
 let signature = null;
 
@@ -44,16 +45,19 @@ el("b-detect").onclick = async () => {
   try {
     const wallets = window.getWallets?.() ?? [];
     log(`wallet-standard getWallets(): ${wallets.length} found`);
-    for (const w of wallets) {
-      const feats = Object.keys(w.features ?? {});
-      log(`  - ${w.name} v${w.version ?? "?"} features: ${feats.join(", ")}`);
-      if (/nightly/i.test(w.name) && feats.includes("standard:signAndSendTransaction")) wallet = w;
-    }
     const nightly = window.nightly?.solana;
-    log(`window.nightly?.solana: ${nightly ? `PRESENT (publicKey=${nightly.publicKey ? String(nightly.publicKey).slice(0, 8) + "…" : "none"}, isConnected=${nightly.isConnected})` : "absent"}`, nightly ? "ok" : "warn");
-    if (wallet) log(`picked wallet-standard wallet: ${wallet.name}`, "ok");
-    else if (nightly) { log("no wallet-standard registration → use direct window.nightly.solana", "warn"); provider = nightly; }
-    else { log("Nightly not detected — install extension, configure Cookie Chain RPC, reload.", "err"); return; }
+    log(`window.nightly?.solana: ${nightly ? "PRESENT" : "absent"}`, nightly ? "ok" : "err");
+    if (!nightly) { log("Nightly not detected — install extension, configure Cookie Chain RPC, reload.", "err"); return; }
+    provider = nightly;
+    const feats = Object.keys(provider.features ?? {});
+    log(`provider.features keys: ${feats.length ? feats.join(", ") : "(none)"}`);
+    // Docs: https://docs.nightly.app/docs/solana/solana/detection — Nightly exposes the
+    // wallet-standard feature surface on window.nightly.solana.features directly.
+    for (const f of ["standard:connect", "standard:disconnect", "standard:signTransaction", "standard:signAndSendTransaction", "standard:signMessage"])
+      log(`  ${f}: ${feats.includes(f) ? "present" : "MISSING"}`, feats.includes(f) ? "ok" : "warn");
+    // Pre-connect publicKey is a 11111111… placeholder (spike run 1) — never display as address.
+    const pk = provider.publicKey ? String(provider.publicKey).slice(0, 8) + "…" : "none";
+    log(`pre-connect publicKey=${pk} (placeholder — ignore until connect)`, "warn");
     el("b-connect").disabled = false;
   } catch (e) { log(`detection error: ${e.message}`, "err"); }
 };
@@ -61,20 +65,25 @@ el("b-detect").onclick = async () => {
 // ---- 2. connect ---------------------------------------------------------
 el("b-connect").onclick = async () => {
   try {
-    if (wallet) {
-      const feats = Object.keys(wallet.features);
-      const feature = feats.includes("standard:connect") ? "standard:connect" : feats.find(f => /connect/i.test(f));
-      log(`connect feature: "${feature}" (all: ${feats.join(", ")})`);
-      const res = await wallet.features[feature].connect({ silent: false });
-      const addr = res?.accounts?.[0]?.address;
-      if (!addr) throw new Error("connect returned no account address");
-      payer = new PublicKey(addr);
-      log(`connected (wallet-standard): ${addr}`, "ok");
+    // Doc: https://docs.nightly.app/docs/solana/solana/connect —
+    // features['standard:connect'].connect({silent}) → { accounts: WalletAccount[] }.
+    let res = null;
+    if (provider.features?.["standard:connect"]) {
+      res = await provider.features["standard:connect"].connect({ silent: false });
+      account = res?.accounts?.[0] ?? null;
+      log(`connected via features['standard:connect'] (${res?.accounts?.length ?? 0} accounts)`, "ok");
     } else {
+      // Legacy fallback (proven in run 1): provider.connect() + provider.publicKey.
       await provider.connect();
-      payer = new PublicKey(String(provider.publicKey));
-      log(`connected (direct provider): ${payer.toBase58()}`, "ok");
+      log("connected via legacy provider.connect()", "ok");
     }
+    const addr = account?.address ?? String(provider.publicKey);
+    if (!addr || addr.startsWith("11111111")) throw new Error("no real account address after connect");
+    payer = new PublicKey(addr);
+    // shim for legacy path: features['standard:signTransaction'] input requires an account object
+    account = account ?? { address: payer.toBase58(), publicKey: payer.toBytes(), chains: [], features: [] };
+    log(`address: ${payer.toBase58()}`, "ok");
+    if (account) log(`account.features: ${account.features?.join(", ") ?? "(none listed)"}`);
     el("b-send").disabled = false;
   } catch (e) { log(`connect error: ${e.name ?? ""} ${e.message}`, "err"); }
 };
@@ -88,19 +97,19 @@ el("b-send").onclick = async () => {
       SystemProgram.transfer({ fromPubkey: payer, toPubkey: payer, lamports: 0 }),
       new TransactionInstruction({ programId: MEMO_PID, keys: [], data: new TextEncoder().encode("SPIKE") }),
     );
+    // Docs: https://docs.nightly.app/docs/solana/solana/sign_transaction —
+    // NO provider.signAndSendTransaction (run 1 TypeError). Documented flow:
+    //   signTransaction({ account, transaction: tx.serialize() }) → [{ signedTransaction }]
+    //   then connection.sendRawTransaction(signedTransaction).
+    // ('standard:signAndSendTransaction' would demand a `chain` id — Cookie Chain id unknown.)
+    const signTx = provider.features?.["standard:signTransaction"];
+    if (!signTx) throw new Error("features['standard:signTransaction'] missing — cannot sign");
+    const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
     const t0 = performance.now();
-    if (wallet) {
-      // standard:signAndSendTransaction expects serialized message bytes
-      const out = await wallet.features["standard:signAndSendTransaction"].signAndSendTransaction({
-        account: wallet.accounts[0],
-        transaction: tx.serializeMessage(),
-        // chain omitted — quirk candidate: Nightly may demand its own chain id for Cookie Chain
-      });
-      signature = out.signature instanceof Uint8Array ? new TextDecoder().decode(out.signature) : out.signature;
-    } else {
-      const res = await provider.signAndSendTransaction(tx);
-      signature = typeof res === "string" ? res : res.signature;
-    }
+    const outs = await signTx.signTransaction({ account, transaction: serialized });
+    const raw = outs?.[0]?.signedTransaction;
+    if (!raw) throw new Error("signTransaction returned no signedTransaction");
+    signature = await conn.sendRawTransaction(raw, { skipPreflight: false });
     log(`sent in ${Math.round(performance.now() - t0)}ms — signature: ${signature}`, "ok");
     log(`explorer: https://cookiescan.io/tx/${signature}`);
     el("b-verify").disabled = false;

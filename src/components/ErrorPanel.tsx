@@ -1,4 +1,4 @@
-// S8 fills this in: preflight balance check + mapped runtime errors.
+// S8 fills in preflight balance check; mapping below done for wallet paths (S3).
 import { createContext, useContext, useState } from "react";
 
 type Err = { message: string; action?: string } | null;
@@ -13,6 +13,22 @@ export function ErrorProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useError = () => useContext(ErrorContext);
+
+// Map wallet.ts coded errors onto user-facing copy (ErrorPanel contract:
+// not-installed / user-reject / wrong-network / send-failure).
+export function mapWalletError(e: unknown): NonNullable<Err> {
+  const code = (e as { code?: string })?.code;
+  switch (code) {
+    case "not-installed":
+      return { message: "Nightly wallet not detected.", action: "install Nightly, add the Cookie Chain RPC, reload" };
+    case "user-reject":
+      return { message: "Request rejected in Nightly.", action: "retry when ready" };
+    case "wrong-network":
+      return { message: "Nightly is not on the Cookie Chain network.", action: "switch Nightly network (RPC check) and retry" };
+    default:
+      return { message: e instanceof Error ? e.message : String(e), action: "try again or check RPC status" };
+  }
+}
 
 export function ErrorPanel() {
   const { error, setError } = useError();
