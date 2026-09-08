@@ -1,12 +1,13 @@
-// GalleryPanel — trophy shelf, not tx history. DAS searchAssets on connect +
-// after each mint confirm. Dialog: focus trap, Esc closes, focus returns to opener.
-// ponytail: DAS collection filter mint unknown until S5 setup — ownere lookup first,
+// GalleryPanel — trophy shelf. DAS searchAssets on connect + after each mint confirm.
+// Cards tilt on hover (CSS), stagger-reveal on scroll. Dialog: focus trap, Esc, focus return.
+// ponytail: DAS collection filter mint unknown until S5 setup — owner lookup first,
 // degrade to memo-history decode (same UI) if collection absent.
 // Upgrade path: swap `load` for collection-filtered searchAssets once mint lands.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { connection, txUrl } from "../lib/rpc";
 import * as libWallet from "../lib/wallet";
 import { GOLDEN_IDX } from "../lib/crack";
+import { useReveals } from "./Reveals";
 
 type Card = { addr: string; fortune: string; golden: boolean; sig: string };
 
@@ -45,12 +46,15 @@ export function GalleryPanel() {
   const [dialog, setDialog] = useState<Card | null>(null);
   const openerRef = useRef<HTMLElement | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const load = useCallback(async (owner: string) => {
     setCards(null);
     const items = await das(owner);
     const mine = items.map(fortuneFromAsset).filter((c): c is Card => !!c);
     setCards(mine);
   }, []);
+
+  useReveals(sectionRef, [cards]);
 
   useEffect(() => {
     const off = libWallet.onWalletEvent((e) => {
@@ -86,14 +90,17 @@ export function GalleryPanel() {
   }, [dialog]);
 
   return (
-    <section className="section" aria-label="Your fortunes">
-      <h2>Your fortunes{cards ? ` · ${cards.length}` : ""}</h2>
+    <section ref={sectionRef} className="section" aria-label="Your fortunes">
+      <div className="section-head">
+        <h2 className="display" data-split>Your fortunes</h2>
+        <span className="section-count num">{cards ? cards.length : "···"}</span>
+      </div>
       {cards === null ? (
         <div className="gallery-grid" aria-label="Loading fortunes">
           {[0, 1, 2].map((i) => <div key={i} className="skeleton" />)}
         </div>
       ) : cards.length === 0 ? (
-        <div className="empty-jar">
+        <div className="empty-jar" data-reveal>
           <img src={`${import.meta.env.BASE_URL}jar-outline.svg`} alt="" aria-hidden />
           <p className="proverb">An empty jar is a future full of fortunes.</p>
         </div>
@@ -106,6 +113,8 @@ export function GalleryPanel() {
               tabIndex={0}
               role="button"
               aria-label={`Open fortune ${c.addr.slice(0, 8)}`}
+              data-cursor="open"
+              data-reveal
               onClick={(e) => { openerRef.current = e.currentTarget; setDialog(c); }}
               onKeyDown={(e) => { if (e.key === "Enter") { openerRef.current = e.currentTarget as HTMLElement; setDialog(c); } }}
             >

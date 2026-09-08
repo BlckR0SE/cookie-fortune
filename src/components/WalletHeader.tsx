@@ -1,10 +1,11 @@
-// WalletHeader — sticky 56px, brand left (Fraunces wordmark + cookie SVG),
-// right: Connect Nightly (primary) / wallet-chip (truncated addr · copy · explorer · balance) · disconnect.
-// Balance shown in COOK 6dp tabular. Triggers: wallet events only, no polling.
+// WalletHeader — sticky, brand left (Fraunces wordmark), right: Connect Nightly
+// (magnetic primary) / wallet-chip (addr · copy · explorer · balance) · disconnect.
+// Balance in COOK 6dp tabular. Triggers: wallet events only, no polling.
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
 import { LAMPORTS_PER_COOK, connection } from "../lib/rpc";
 import * as wallet from "../lib/wallet";
+import { Magnetic } from "./Magnetic";
 import { mapWalletError, useSetError } from "./ErrorPanel";
 
 const EXPLORER = "https://cookiescan.io";
@@ -73,9 +74,9 @@ export function WalletHeader() {
   const short = addr ? `${addr.slice(0, 4)}…${addr.slice(-4)}` : null;
   return (
     <header className="site-header">
-      <a className="brand" href="#top" aria-label="Cookie Fortune home">
+      <a className="brand" href="#top" aria-label="Cookie Fortune home" data-cursor="home">
         <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" aria-hidden />
-        Cookie Fortune
+        <span className="brand-word">Cookie&nbsp;Fortune</span>
       </a>
       <div className="header-right">
         {short ? (
@@ -91,9 +92,11 @@ export function WalletHeader() {
             <button className="btn-ghost" onClick={toggle} disabled={busy}>Disconnect</button>
           </>
         ) : (
-          <button className="btn-primary" onClick={toggle} disabled={busy}>
-            {busy ? "Connecting…" : "Connect Nightly"}
-          </button>
+          <Magnetic strength={0.35}>
+            <button className="btn-primary" onClick={toggle} disabled={busy}>
+              {busy ? "Connecting…" : "Connect Nightly"}
+            </button>
+          </Magnetic>
         )}
       </div>
     </header>
