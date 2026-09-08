@@ -1,8 +1,11 @@
 // Direct Nightly provider util — plan's pre-committed fallback (adapter path dead:
 // spike browser log showed getWallets()=0, Nightly not wallet-standard registered).
 // Method names from https://docs.nightly.app/docs/solana/solana/{detection,connect,sign_transaction,sign_message}
-// — everything lives on provider.features['standard:*'], NOT on the provider itself
+// — connect/disconnect live on provider.features['standard:*'], NOT on the provider itself
 // (spike log: provider.signAndSendTransaction is not a function).
+// Browser run 2: signing features are keyed 'solana:*' — provider.features AND account.features
+// both list solana:signTransaction/signAndSendTransaction/signMessage; the docs' 'standard:'
+// signing keys are absent on Nightly.
 // ponytail: signTransaction input is tx.serialize() (all signatures, like adapter's
 // legacy path) because setSignatures-based partial serialize broke Nightly in spike 002.
 // Upgrade path: switch to requireAllSignatures:false + fee-payer pre-sign if Nightly hardens.
@@ -35,10 +38,10 @@ interface NightlySignMessageOutput {
 interface NightlyFeatures {
   "standard:connect"?: { connect(input?: { silent?: boolean }): Promise<{ accounts: readonly NightlyAccount[] }> };
   "standard:disconnect"?: { disconnect(): Promise<void> };
-  "standard:signTransaction"?: {
+  "solana:signTransaction"?: {
     signTransaction(...inputs: readonly NightlySignTxInput[]): Promise<readonly NightlySignTxOutput[]>;
   };
-  "standard:signMessage"?: {
+  "solana:signMessage"?: {
     signMessage(...inputs: readonly NightlySignMessageInput[]): Promise<readonly NightlySignMessageOutput[]>;
   };
 }
@@ -131,12 +134,22 @@ export async function disconnect(): Promise<void> {
   }
 }
 
-// Nightly has no provider-level signAndSendTransaction (spike 001 TypeError). Doc flow:
-// sign via features['standard:signTransaction'], then sendRawTransaction ourselves.
+// Nightly has no provider-level signAndSendTransaction (spike 001 TypeError). Run-2 flow:
+// sign via features['solana:signTransaction'], then sendRawTransaction ourselves.
+// Resolve from the connected account's advertised features first, provider.features fallback
+// (implementations live only on the provider; account.features advertises the keys).
+function signingFeature<K extends "solana:signTransaction" | "solana:signMessage">(
+  name: K,
+): NightlyFeatures[K] | undefined {
+  const feats = provider?.features;
+  const viaAccount = account?.features?.includes(name) ? feats?.[name] : undefined;
+  return viaAccount ?? feats?.[name];
+}
+
 export async function signAndSend(tx: Transaction): Promise<string> {
   if (!provider || !account) throw coded("send-failure", "wallet not connected");
-  const signTx = provider.features?.["standard:signTransaction"];
-  if (!signTx) throw coded("send-failure", "Nightly signTransaction feature unavailable");
+  const signTx = signingFeature("solana:signTransaction");
+  if (!signTx) throw coded("send-failure", "Nightly solana:signTransaction feature unavailable");
   try {
     const outputs = await signTx.signTransaction({ account, transaction: tx.serialize() });
     const raw = outputs?.[0]?.signedTransaction;
@@ -149,8 +162,8 @@ export async function signAndSend(tx: Transaction): Promise<string> {
 
 export async function signMessage(message: Uint8Array): Promise<Uint8Array> {
   if (!provider || !account) throw coded("send-failure", "wallet not connected");
-  const signMsg = provider.features?.["standard:signMessage"];
-  if (!signMsg) throw coded("send-failure", "Nightly signMessage feature unavailable");
+  const signMsg = signingFeature("solana:signMessage");
+  if (!signMsg) throw coded("send-failure", "Nightly solana:signMessage feature unavailable");
   const out = await signMsg.signMessage({ account, message });
   return out?.[0]?.signature ?? new Uint8Array();
 }

@@ -53,7 +53,7 @@ el("b-detect").onclick = async () => {
     log(`provider.features keys: ${feats.length ? feats.join(", ") : "(none)"}`);
     // Docs: https://docs.nightly.app/docs/solana/solana/detection — Nightly exposes the
     // wallet-standard feature surface on window.nightly.solana.features directly.
-    for (const f of ["standard:connect", "standard:disconnect", "standard:signTransaction", "standard:signAndSendTransaction", "standard:signMessage"])
+    for (const f of ["standard:connect", "standard:disconnect", "solana:signTransaction", "solana:signAndSendTransaction", "solana:signMessage"])
       log(`  ${f}: ${feats.includes(f) ? "present" : "MISSING"}`, feats.includes(f) ? "ok" : "warn");
     // Pre-connect publicKey is a 11111111… placeholder (spike run 1) — never display as address.
     const pk = provider.publicKey ? String(provider.publicKey).slice(0, 8) + "…" : "none";
@@ -80,7 +80,7 @@ el("b-connect").onclick = async () => {
     const addr = account?.address ?? String(provider.publicKey);
     if (!addr || addr.startsWith("11111111")) throw new Error("no real account address after connect");
     payer = new PublicKey(addr);
-    // shim for legacy path: features['standard:signTransaction'] input requires an account object
+    // shim for legacy path: features['solana:signTransaction'] input requires an account object
     account = account ?? { address: payer.toBase58(), publicKey: payer.toBytes(), chains: [], features: [] };
     log(`address: ${payer.toBase58()}`, "ok");
     if (account) log(`account.features: ${account.features?.join(", ") ?? "(none listed)"}`);
@@ -97,20 +97,39 @@ el("b-send").onclick = async () => {
       SystemProgram.transfer({ fromPubkey: payer, toPubkey: payer, lamports: 0 }),
       new TransactionInstruction({ programId: MEMO_PID, keys: [], data: new TextEncoder().encode("SPIKE") }),
     );
-    // Docs: https://docs.nightly.app/docs/solana/solana/sign_transaction —
-    // NO provider.signAndSendTransaction (run 1 TypeError). Documented flow:
-    //   signTransaction({ account, transaction: tx.serialize() }) → [{ signedTransaction }]
-    //   then connection.sendRawTransaction(signedTransaction).
-    // ('standard:signAndSendTransaction' would demand a `chain` id — Cookie Chain id unknown.)
-    const signTx = provider.features?.["standard:signTransaction"];
-    if (!signTx) throw new Error("features['standard:signTransaction'] missing — cannot sign");
+    // Run 2: Nightly keys signing features 'solana:*' (provider.features AND account.features);
+    // docs' 'standard:' signing keys are absent (run 2 log). Resolve from account.features
+    // first, provider fallback.
+    // Optional probe: try features['solana:signAndSendTransaction'] once — docs demand a `chain`
+    // id (Cookie Chain id unknown), so expect rejection; on any error fall back to
+    // solana:signTransaction + sendRawTransaction. Which path wins is logged for README quirks.
+    const feats = Object.keys(provider.features ?? {});
+    const fromAccount = (account?.features ?? []).includes("solana:signTransaction") && feats.includes("solana:signTransaction");
+    const signTx = fromAccount ? provider.features["solana:signTransaction"] : provider.features?.["solana:signTransaction"] ?? null;
+    const signSend = feats.includes("solana:signAndSendTransaction") ? provider.features["solana:signAndSendTransaction"] : null;
+    log(`resolved signing keys: signTransaction=${fromAccount ? "account.features" : feats.includes("solana:signTransaction") ? "provider.features" : "MISSING"}:solana:signTransaction` +
+        (signSend ? ` / probe=provider.features:solana:signAndSendTransaction` : " / probe=unavailable"));
+    if (!signTx && !feats.includes("solana:signTransaction")) throw new Error("features['solana:signTransaction'] missing — cannot sign");
     const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
     const t0 = performance.now();
-    const outs = await signTx.signTransaction({ account, transaction: serialized });
-    const raw = outs?.[0]?.signedTransaction;
-    if (!raw) throw new Error("signTransaction returned no signedTransaction");
-    signature = await conn.sendRawTransaction(raw, { skipPreflight: false });
-    log(`sent in ${Math.round(performance.now() - t0)}ms — signature: ${signature}`, "ok");
+    let raw = null;
+    let path = "signTransaction+sendRawTransaction";
+    if (signSend) {
+      try {
+        const out = await signSend.signAndSendTransaction({ account, transaction: serialized });
+        if (out?.signature) { signature = out.signature; path = "signAndSendTransaction (probe won)"; }
+      } catch (probeErr) {
+        log(`signAndSend probe rejected (${String(probeErr.message || probeErr).slice(0, 80)}) — falling back`, "warn");
+      }
+    }
+    if (!signature) {
+      const outs = await signTx.signTransaction({ account, transaction: serialized });
+      raw = outs?.[0]?.signedTransaction;
+      if (!raw) throw new Error("signTransaction returned no signedTransaction");
+      signature = await conn.sendRawTransaction(raw, { skipPreflight: false });
+      path = "signTransaction+sendRawTransaction";
+    }
+    log(`sent via ${path} in ${Math.round(performance.now() - t0)}ms — signature: ${signature}`, "ok");
     log(`explorer: https://cookiescan.io/tx/${signature}`);
     el("b-verify").disabled = false;
     poll();
