@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #7",
+  "fortune": "You will find what you seek in the last place you tx.",
+  "image": "fortunes/cards/7.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

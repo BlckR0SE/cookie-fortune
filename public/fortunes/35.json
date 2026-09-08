@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #35",
+  "fortune": "Buy the rumor? The rumor is cookies.",
+  "image": "fortunes/cards/35.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

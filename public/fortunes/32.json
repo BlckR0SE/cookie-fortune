@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #32",
+  "fortune": "Share your gains. Memory is the only ledger that matters.",
+  "image": "fortunes/cards/32.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

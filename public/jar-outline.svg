@@ -1,0 +1,11 @@
+<!-- Empty jar outline for gallery empty state. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150" class="jar-outline">
+  <g fill="none" stroke="#C9B39A" stroke-width="3" stroke-linecap="round" opacity=".85">
+    <rect x="38" y="10" width="44" height="18" rx="5"/>
+    <path d="M34 28c-10 6-16 16-16 30v62c0 12 10 20 22 20h40c12 0 22-8 22-20V58c0-14-6-24-16-30"/>
+    <path d="M28 52h64" opacity=".5"/>
+  </g>
+  <circle cx="44" cy="112" r="3" fill="#C9B39A" opacity=".5"/>
+  <circle cx="78" cy="118" r="2.4" fill="#C9B39A" opacity=".4"/>
+  <circle cx="60" cy="104" r="2.2" fill="#C9B39A" opacity=".35"/>
+</svg>

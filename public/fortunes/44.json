@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #44",
+  "fortune": "Crack boldly. The crumbs regrow.",
+  "image": "fortunes/cards/44.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

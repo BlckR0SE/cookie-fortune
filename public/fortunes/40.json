@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #40",
+  "fortune": "Do not fear the fork. Fear the stale block.",
+  "image": "fortunes/cards/40.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

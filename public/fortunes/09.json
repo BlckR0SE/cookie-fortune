@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #9",
+  "fortune": "Golden hour approaches. Do not sell the sunrise.",
+  "image": "fortunes/cards/9.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

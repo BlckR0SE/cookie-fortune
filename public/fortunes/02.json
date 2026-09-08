@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #2",
+  "fortune": "Small bets, warm bread, quiet heart.",
+  "image": "fortunes/cards/2.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

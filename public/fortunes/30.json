@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #30",
+  "fortune": "Not every candle is a signal. Some are just light.",
+  "image": "fortunes/cards/30.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

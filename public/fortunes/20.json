@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #20",
+  "fortune": "The best time to crack was yesterday. Second best: now.",
+  "image": "fortunes/cards/20.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

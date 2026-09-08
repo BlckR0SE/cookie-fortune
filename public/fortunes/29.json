@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #29",
+  "fortune": "The busiest bakery has the warmest door.",
+  "image": "fortunes/cards/29.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

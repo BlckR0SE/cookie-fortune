@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #41",
+  "fortune": "Your future self already said thank you.",
+  "image": "fortunes/cards/41.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

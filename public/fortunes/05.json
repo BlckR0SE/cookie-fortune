@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #5",
+  "fortune": "Two roads diverge. Take the one with cookies.",
+  "image": "fortunes/cards/5.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

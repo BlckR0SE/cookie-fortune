@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #13",
+  "fortune": "Fees are small when the heart is large.",
+  "image": "fortunes/cards/13.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

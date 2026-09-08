@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #57",
+  "fortune": "The oven is hot. So is your streak.",
+  "image": "fortunes/cards/57.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

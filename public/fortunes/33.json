@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #33",
+  "fortune": "A cookie divided is a friendship multiplied.",
+  "image": "fortunes/cards/33.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

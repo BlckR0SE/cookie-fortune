@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #22",
+  "fortune": "Do not chase the pump. Let the pump notice you.",
+  "image": "fortunes/cards/22.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

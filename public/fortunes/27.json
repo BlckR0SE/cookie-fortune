@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #27",
+  "fortune": "What is rug-proof cannot be pulled.",
+  "image": "fortunes/cards/27.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

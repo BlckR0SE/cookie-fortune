@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #56",
+  "fortune": "Confusion is confirmation you are learning the chain.",
+  "image": "fortunes/cards/56.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

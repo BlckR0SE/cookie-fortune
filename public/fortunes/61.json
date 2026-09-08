@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #61",
+  "fortune": "Someone somewhere is telling a friend about you. Bullish.",
+  "image": "fortunes/cards/61.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

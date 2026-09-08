@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #58",
+  "fortune": "What you seek is already in your wallet of memories.",
+  "image": "fortunes/cards/58.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

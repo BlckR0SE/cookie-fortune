@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #11",
+  "fortune": "The crumb you drop today feeds a whale tomorrow.",
+  "image": "fortunes/cards/11.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

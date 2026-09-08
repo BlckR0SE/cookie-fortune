@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #24",
+  "fortune": "The jar fills one crumb at a time.",
+  "image": "fortunes/cards/24.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

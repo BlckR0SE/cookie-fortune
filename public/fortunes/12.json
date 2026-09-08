@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #12",
+  "fortune": "Trust the block, verify the baker.",
+  "image": "fortunes/cards/12.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

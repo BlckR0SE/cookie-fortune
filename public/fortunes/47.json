@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #47",
+  "fortune": "Serenity now, serendipity next block.",
+  "image": "fortunes/cards/47.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

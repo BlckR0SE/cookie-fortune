@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #16",
+  "fortune": "The oven rewards those who preheat.",
+  "image": "fortunes/cards/16.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

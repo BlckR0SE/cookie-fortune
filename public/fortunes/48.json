@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #48",
+  "fortune": "The best collateral is a kept promise.",
+  "image": "fortunes/cards/48.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

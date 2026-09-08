@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #14",
+  "fortune": "An empty wallet is a future full of deposits.",
+  "image": "fortunes/cards/14.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

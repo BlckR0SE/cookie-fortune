@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #60",
+  "fortune": "The finality you crave is one confirmation away.",
+  "image": "fortunes/cards/60.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

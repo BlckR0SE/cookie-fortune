@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #39",
+  "fortune": "Lucky is a habit dressed as an accident.",
+  "image": "fortunes/cards/39.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

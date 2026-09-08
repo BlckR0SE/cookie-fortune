@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #28",
+  "fortune": "You will laugh at today's dip from tomorrow's rooftop.",
+  "image": "fortunes/cards/28.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

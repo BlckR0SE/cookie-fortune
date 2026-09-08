@@ -1,0 +1,11 @@
+{
+  "name": "Golden Fortune",
+  "fortune": "Half the pot is already yours — you just had to show up.",
+  "image": "fortunes/cards/63.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "golden"
+    }
+  ]
+}

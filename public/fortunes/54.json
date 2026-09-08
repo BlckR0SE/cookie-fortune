@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #54",
+  "fortune": "The wisest degen farms smiles.",
+  "image": "fortunes/cards/54.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

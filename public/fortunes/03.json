@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #3",
+  "fortune": "Your next good idea arrives during a transaction.",
+  "image": "fortunes/cards/3.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

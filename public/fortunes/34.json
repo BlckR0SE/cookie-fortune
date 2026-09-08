@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #34",
+  "fortune": "The slot decides. The heart interprets.",
+  "image": "fortunes/cards/34.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

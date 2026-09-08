@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #19",
+  "fortune": "A diamond hand once was a shaking hand.",
+  "image": "fortunes/cards/19.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #21",
+  "fortune": "Somewhere, a whale envies your tiny position.",
+  "image": "fortunes/cards/21.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

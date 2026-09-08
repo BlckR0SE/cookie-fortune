@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #15",
+  "fortune": "You are early. Everyone is early. Somebody is earliest.",
+  "image": "fortunes/cards/15.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #25",
+  "fortune": "Fortune favors the bold — and the ones who read memos.",
+  "image": "fortunes/cards/25.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

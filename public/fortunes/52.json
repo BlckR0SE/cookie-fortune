@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #52",
+  "fortune": "A golden ticket hides in an ordinary wrapper.",
+  "image": "fortunes/cards/52.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

@@ -1,43 +1,125 @@
-// S8 fills in preflight balance check; mapping below done for wallet paths (S3).
-import { createContext, useContext, useState } from "react";
+// ErrorPanel — variants per design.md Microcopy table: proverb (Nunito 700) →
+// plain truth (muted) → exactly ONE recovery action. Raw code never hidden.
+// Placement: `inline` under the stage (draw errors), `banner` page-top sticky (RPC/wallet).
+import { createContext, useCallback, useContext, useState } from "react";
 
-type Err = { message: string; action?: string } | null;
-const ErrorContext = createContext<{ error: Err; setError: (e: Err) => void }>({
+export type ErrVariant = "insufficient-gas" | "user-rejected" | "blockhash-expired" | "rpc-unreachable" | "mint-failed" | "wallet";
+
+export type AppError = {
+  variant: ErrVariant;
+  placement: "inline" | "banner";
+  proverb: string;
+  truth: string;
+  action: { label: string; onClick?: () => void; href?: string };
+  extraLinks?: { label: string; href: string }[];
+  code?: string;
+};
+
+const ErrorContext = createContext<{ error: AppError | null; setError: (e: AppError | null) => void }>({
   error: null,
   setError: () => {},
 });
 
 export function ErrorProvider({ children }: { children: React.ReactNode }) {
-  const [error, setError] = useState<Err>(null);
+  const [error, setError] = useState<AppError | null>(null);
   return <ErrorContext.Provider value={{ error, setError }}>{children}</ErrorContext.Provider>;
 }
 
 export const useError = () => useContext(ErrorContext);
+export const useSetError = () => useContext(ErrorContext).setError;
 
-// Map wallet.ts coded errors onto user-facing copy (ErrorPanel contract:
-// not-installed / user-reject / wrong-network / send-failure).
-export function mapWalletError(e: unknown): NonNullable<Err> {
-  const code = (e as { code?: string })?.code;
-  switch (code) {
-    case "not-installed":
-      return { message: "Nightly wallet not detected.", action: "install Nightly, add the Cookie Chain RPC, reload" };
-    case "user-reject":
-      return { message: "Request rejected in Nightly.", action: "retry when ready" };
-    case "wrong-network":
-      return { message: "Nightly is not on the Cookie Chain network.", action: "switch Nightly network (RPC check) and retry" };
-    default:
-      return { message: e instanceof Error ? e.message : String(e), action: "try again or check RPC status" };
-  }
+const GAS_LINKS = [
+  { label: "Bridge COOK", href: "https://hyperlane.cookiescan.io" },
+  { label: "Telegram gas request", href: "https://t.me/TheCookieNetChain" },
+  { label: "Cookieswap", href: "https://swap.cookiescan.io" },
+];
+
+export function insufficientGasError(have: number, need: number): AppError {
+  return {
+    variant: "insufficient-gas",
+    placement: "inline",
+    proverb: "A cookie cannot crack an empty jar.",
+    truth: `Need ${need.toFixed(4)} COOK, you have ${have.toFixed(4)}.`,
+    action: { label: "Get gas ↓", href: "#get-gas" },
+    extraLinks: GAS_LINKS,
+  };
+}
+
+export function mapWalletError(e: unknown): AppError {
+  const err = e as { code?: string; message?: string };
+  const code = err?.code;
+  const raw = err?.message ?? String(e);
+  if (code === "user-reject")
+    return {
+      variant: "user-rejected",
+      placement: "inline",
+      proverb: "The cookie chose to stay whole.",
+      truth: "(You cancelled the signature.)",
+      action: { label: "Try again" },
+      code: raw,
+    };
+  if (code === "not-installed")
+    return {
+      variant: "wallet",
+      placement: "banner",
+      proverb: "Your fortune awaits a wallet.",
+      truth: "Nightly wallet not detected. Install it and add the Cookie Chain RPC.",
+      action: { label: "Nightly docs", href: "https://docs.nightly.app/docs/solana/solana/detection" },
+      code: raw,
+    };
+  if (code === "wrong-network")
+    return {
+      variant: "rpc-unreachable",
+      placement: "banner",
+      proverb: "The bakery's phone line is busy.",
+      truth: "(Nightly is not on the Cookie Chain network — switch network and retry.)",
+      action: { label: "Retry now" },
+      code: raw,
+    };
+  return {
+    variant: "rpc-unreachable",
+    placement: "banner",
+    proverb: "The bakery's phone line is busy.",
+    truth: "(RPC unreachable — retrying is safe.)",
+    action: { label: "Retry now" },
+    code: raw,
+  };
+}
+
+export function rpcDownError(detail: string): AppError {
+  return {
+    variant: "rpc-unreachable",
+    placement: "banner",
+    proverb: "The bakery's phone line is busy.",
+    truth: "(RPC unreachable — retrying in 5s.)",
+    action: { label: "Retry now" },
+    code: detail,
+  };
 }
 
 export function ErrorPanel() {
   const { error, setError } = useError();
+  const dismiss = useCallback(() => setError(null), [setError]);
   if (!error) return null;
+  const act = () => {
+    error.action.onClick?.();
+    if (!error.action.href) dismiss();
+  };
   return (
-    <div className="error-banner" role="alert">
-      <span>{error.message}</span>
-      {error.action && <span className="muted"> → {error.action}</span>}
-      <button className="btn small" onClick={() => setError(null)}>dismiss</button>
+    <div className={error.placement === "banner" ? "error-banner" : "error-inline"} role="alert">
+      <p className="error-proverb">{error.proverb}</p>
+      <p className="error-truth">{error.truth}</p>
+      {error.action.href ? (
+        <a className="link-explorer" href={error.action.href} target={error.action.href.startsWith("http") ? "_blank" : undefined} rel="noopener" onClick={act}>
+          {error.action.label}
+        </a>
+      ) : (
+        <button className="btn-ghost" onClick={act}>{error.action.label}</button>
+      )}
+      {error.extraLinks?.map((l) => (
+        <a key={l.href} className="link-explorer" href={l.href} target="_blank" rel="noopener">{l.label}</a>
+      ))}
+      {error.code && <div className="error-code"> (code: {error.code})</div>}
     </div>
   );
 }

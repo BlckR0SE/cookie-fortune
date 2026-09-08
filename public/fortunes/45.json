@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #45",
+  "fortune": "The moon is just a coin that made it.",
+  "image": "fortunes/cards/45.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

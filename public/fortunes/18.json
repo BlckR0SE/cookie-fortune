@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #18",
+  "fortune": "Your patience will compound faster than your portfolio.",
+  "image": "fortunes/cards/18.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

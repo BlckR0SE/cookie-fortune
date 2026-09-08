@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #36",
+  "fortune": "You are the default signer of your own story.",
+  "image": "fortunes/cards/36.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

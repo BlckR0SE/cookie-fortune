@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #43",
+  "fortune": "A closed position opens a mind.",
+  "image": "fortunes/cards/43.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

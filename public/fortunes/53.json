@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #53",
+  "fortune": "Every jar was empty on day one.",
+  "image": "fortunes/cards/53.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

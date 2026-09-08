@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #8",
+  "fortune": "A wise trader once bought high. We do not speak of him.",
+  "image": "fortunes/cards/8.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

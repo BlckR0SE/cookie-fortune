@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #49",
+  "fortune": "Your best trade is the one you almost made and didn't. Probably.",
+  "image": "fortunes/cards/49.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

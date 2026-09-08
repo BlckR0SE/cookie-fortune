@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #31",
+  "fortune": "Your lag is someone else's lead. Breathe.",
+  "image": "fortunes/cards/31.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

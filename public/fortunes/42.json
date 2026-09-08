@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #42",
+  "fortune": "The pot remembers who stirred it.",
+  "image": "fortunes/cards/42.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

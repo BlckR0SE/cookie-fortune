@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #46",
+  "fortune": "You will win an argument with a chart.",
+  "image": "fortunes/cards/46.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

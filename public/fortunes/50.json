@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #50",
+  "fortune": "Warm dough, cold hands, hot streak.",
+  "image": "fortunes/cards/50.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

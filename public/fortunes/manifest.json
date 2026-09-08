@@ -1,0 +1,770 @@
+[
+  {
+    "idx": 0,
+    "name": "Fortune #0",
+    "fortune": "A door marked 'exit' is also a door marked 'begin'.",
+    "image": "fortunes/cards/0.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 1,
+    "name": "Fortune #1",
+    "fortune": "The slot you occupy was empty a moment ago. Luck notices.",
+    "image": "fortunes/cards/1.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 2,
+    "name": "Fortune #2",
+    "fortune": "Small bets, warm bread, quiet heart.",
+    "image": "fortunes/cards/2.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 3,
+    "name": "Fortune #3",
+    "fortune": "Your next good idea arrives during a transaction.",
+    "image": "fortunes/cards/3.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 4,
+    "name": "Fortune #4",
+    "fortune": "The chain forgets nothing — forgive yourself anyway.",
+    "image": "fortunes/cards/4.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 5,
+    "name": "Fortune #5",
+    "fortune": "Two roads diverge. Take the one with cookies.",
+    "image": "fortunes/cards/5.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 6,
+    "name": "Fortune #6",
+    "fortune": "Patience is a validator that never sleeps.",
+    "image": "fortunes/cards/6.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 7,
+    "name": "Fortune #7",
+    "fortune": "You will find what you seek in the last place you tx.",
+    "image": "fortunes/cards/7.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 8,
+    "name": "Fortune #8",
+    "fortune": "A wise trader once bought high. We do not speak of him.",
+    "image": "fortunes/cards/8.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 9,
+    "name": "Fortune #9",
+    "fortune": "Golden hour approaches. Do not sell the sunrise.",
+    "image": "fortunes/cards/9.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 10,
+    "name": "Fortune #10",
+    "fortune": "Your bags are heavy because they carry tomorrow.",
+    "image": "fortunes/cards/10.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 11,
+    "name": "Fortune #11",
+    "fortune": "The crumb you drop today feeds a whale tomorrow.",
+    "image": "fortunes/cards/11.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 12,
+    "name": "Fortune #12",
+    "fortune": "Trust the block, verify the baker.",
+    "image": "fortunes/cards/12.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 13,
+    "name": "Fortune #13",
+    "fortune": "Fees are small when the heart is large.",
+    "image": "fortunes/cards/13.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 14,
+    "name": "Fortune #14",
+    "fortune": "An empty wallet is a future full of deposits.",
+    "image": "fortunes/cards/14.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 15,
+    "name": "Fortune #15",
+    "fortune": "You are early. Everyone is early. Somebody is earliest.",
+    "image": "fortunes/cards/15.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 16,
+    "name": "Fortune #16",
+    "fortune": "The oven rewards those who preheat.",
+    "image": "fortunes/cards/16.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 17,
+    "name": "Fortune #17",
+    "fortune": "Beware of FUD wearing a friendly smile.",
+    "image": "fortunes/cards/17.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 18,
+    "name": "Fortune #18",
+    "fortune": "Your patience will compound faster than your portfolio.",
+    "image": "fortunes/cards/18.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 19,
+    "name": "Fortune #19",
+    "fortune": "A diamond hand once was a shaking hand.",
+    "image": "fortunes/cards/19.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 20,
+    "name": "Fortune #20",
+    "fortune": "The best time to crack was yesterday. Second best: now.",
+    "image": "fortunes/cards/20.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 21,
+    "name": "Fortune #21",
+    "fortune": "Somewhere, a whale envies your tiny position.",
+    "image": "fortunes/cards/21.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 22,
+    "name": "Fortune #22",
+    "fortune": "Do not chase the pump. Let the pump notice you.",
+    "image": "fortunes/cards/22.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 23,
+    "name": "Fortune #23",
+    "fortune": "Your signature is your word. Keep both clean.",
+    "image": "fortunes/cards/23.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 24,
+    "name": "Fortune #24",
+    "fortune": "The jar fills one crumb at a time.",
+    "image": "fortunes/cards/24.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 25,
+    "name": "Fortune #25",
+    "fortune": "Fortune favors the bold — and the ones who read memos.",
+    "image": "fortunes/cards/25.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 26,
+    "name": "Fortune #26",
+    "fortune": "A dip is just the market taking a breath.",
+    "image": "fortunes/cards/26.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 27,
+    "name": "Fortune #27",
+    "fortune": "What is rug-proof cannot be pulled.",
+    "image": "fortunes/cards/27.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 28,
+    "name": "Fortune #28",
+    "fortune": "You will laugh at today's dip from tomorrow's rooftop.",
+    "image": "fortunes/cards/28.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 29,
+    "name": "Fortune #29",
+    "fortune": "The busiest bakery has the warmest door.",
+    "image": "fortunes/cards/29.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 30,
+    "name": "Fortune #30",
+    "fortune": "Not every candle is a signal. Some are just light.",
+    "image": "fortunes/cards/30.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 31,
+    "name": "Fortune #31",
+    "fortune": "Your lag is someone else's lead. Breathe.",
+    "image": "fortunes/cards/31.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 32,
+    "name": "Fortune #32",
+    "fortune": "Share your gains. Memory is the only ledger that matters.",
+    "image": "fortunes/cards/32.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 33,
+    "name": "Fortune #33",
+    "fortune": "A cookie divided is a friendship multiplied.",
+    "image": "fortunes/cards/33.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 34,
+    "name": "Fortune #34",
+    "fortune": "The slot decides. The heart interprets.",
+    "image": "fortunes/cards/34.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 35,
+    "name": "Fortune #35",
+    "fortune": "Buy the rumor? The rumor is cookies.",
+    "image": "fortunes/cards/35.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 36,
+    "name": "Fortune #36",
+    "fortune": "You are the default signer of your own story.",
+    "image": "fortunes/cards/36.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 37,
+    "name": "Fortune #37",
+    "fortune": "One day your net worth matches your net optimism.",
+    "image": "fortunes/cards/37.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 38,
+    "name": "Fortune #38",
+    "fortune": "The chain is public. Your intentions may stay private.",
+    "image": "fortunes/cards/38.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 39,
+    "name": "Fortune #39",
+    "fortune": "Lucky is a habit dressed as an accident.",
+    "image": "fortunes/cards/39.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 40,
+    "name": "Fortune #40",
+    "fortune": "Do not fear the fork. Fear the stale block.",
+    "image": "fortunes/cards/40.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 41,
+    "name": "Fortune #41",
+    "fortune": "Your future self already said thank you.",
+    "image": "fortunes/cards/41.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 42,
+    "name": "Fortune #42",
+    "fortune": "The pot remembers who stirred it.",
+    "image": "fortunes/cards/42.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 43,
+    "name": "Fortune #43",
+    "fortune": "A closed position opens a mind.",
+    "image": "fortunes/cards/43.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 44,
+    "name": "Fortune #44",
+    "fortune": "Crack boldly. The crumbs regrow.",
+    "image": "fortunes/cards/44.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 45,
+    "name": "Fortune #45",
+    "fortune": "The moon is just a coin that made it.",
+    "image": "fortunes/cards/45.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 46,
+    "name": "Fortune #46",
+    "fortune": "You will win an argument with a chart.",
+    "image": "fortunes/cards/46.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 47,
+    "name": "Fortune #47",
+    "fortune": "Serenity now, serendipity next block.",
+    "image": "fortunes/cards/47.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 48,
+    "name": "Fortune #48",
+    "fortune": "The best collateral is a kept promise.",
+    "image": "fortunes/cards/48.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 49,
+    "name": "Fortune #49",
+    "fortune": "Your best trade is the one you almost made and didn't. Probably.",
+    "image": "fortunes/cards/49.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 50,
+    "name": "Fortune #50",
+    "fortune": "Warm dough, cold hands, hot streak.",
+    "image": "fortunes/cards/50.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 51,
+    "name": "Fortune #51",
+    "fortune": "The explorer shows your tx. Only you show your character.",
+    "image": "fortunes/cards/51.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 52,
+    "name": "Fortune #52",
+    "fortune": "A golden ticket hides in an ordinary wrapper.",
+    "image": "fortunes/cards/52.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 53,
+    "name": "Fortune #53",
+    "fortune": "Every jar was empty on day one.",
+    "image": "fortunes/cards/53.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 54,
+    "name": "Fortune #54",
+    "fortune": "The wisest degen farms smiles.",
+    "image": "fortunes/cards/54.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 55,
+    "name": "Fortune #55",
+    "fortune": "Your private key is safe. Your heart is another matter.",
+    "image": "fortunes/cards/55.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 56,
+    "name": "Fortune #56",
+    "fortune": "Confusion is confirmation you are learning the chain.",
+    "image": "fortunes/cards/56.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 57,
+    "name": "Fortune #57",
+    "fortune": "The oven is hot. So is your streak.",
+    "image": "fortunes/cards/57.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 58,
+    "name": "Fortune #58",
+    "fortune": "What you seek is already in your wallet of memories.",
+    "image": "fortunes/cards/58.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 59,
+    "name": "Fortune #59",
+    "fortune": "Small wins compound. So do small kindnesses.",
+    "image": "fortunes/cards/59.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 60,
+    "name": "Fortune #60",
+    "fortune": "The finality you crave is one confirmation away.",
+    "image": "fortunes/cards/60.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 61,
+    "name": "Fortune #61",
+    "fortune": "Someone somewhere is telling a friend about you. Bullish.",
+    "image": "fortunes/cards/61.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 62,
+    "name": "Fortune #62",
+    "fortune": "Your luck is loading. Do not refresh.",
+    "image": "fortunes/cards/62.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "common"
+      }
+    ]
+  },
+  {
+    "idx": 63,
+    "name": "Golden Fortune",
+    "fortune": "Half the pot is already yours — you just had to show up.",
+    "image": "fortunes/cards/63.svg",
+    "attributes": [
+      {
+        "trait_type": "rarity",
+        "value": "golden"
+      }
+    ]
+  }
+]

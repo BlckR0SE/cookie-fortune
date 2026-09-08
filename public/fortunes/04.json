@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #4",
+  "fortune": "The chain forgets nothing — forgive yourself anyway.",
+  "image": "fortunes/cards/4.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

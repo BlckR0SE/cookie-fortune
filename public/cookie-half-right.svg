@@ -1,0 +1,20 @@
+<!-- Right half: mirrored ragged broken edge. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 260" class="cookie-half-right">
+  <defs>
+    <pattern id="crumbsR" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="10" r="1.5" fill="#C98A2E"/>
+      <circle cx="11" cy="3" r="1.3" fill="#F6D9A0"/>
+    </pattern>
+    <clipPath id="halfR"><path d="M130 14c10 38 10 194 0 232a116 116 0 0 0 0-232z"/></clipPath>
+  </defs>
+  <g clip-path="url(#halfR)">
+    <circle cx="130" cy="130" r="112" fill="#E8A25C"/>
+    <circle cx="130" cy="130" r="112" fill="url(#crumbsR)" opacity=".5"/>
+    <path d="M36 96a100 100 0 0 1 58-58" fill="none" stroke="#F6D9A0" stroke-width="10" stroke-linecap="round" opacity=".8"/>
+    <circle cx="163" cy="96" r="11" fill="#3A2A1A"/>
+    <circle cx="168" cy="152" r="9" fill="#3A2A1A"/>
+    <circle cx="138" cy="188" r="8" fill="#3A2A1A"/>
+  </g>
+  <path d="M130 14c10 38 10 194 0 232" fill="none" stroke="#8a5a28" stroke-width="4" stroke-linecap="round"/>
+  <path d="M130 14c10 38 10 194 0 232a116 116 0 0 0 0-232z" fill="none" stroke="#B8763C" stroke-width="5"/>
+</svg>

@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #23",
+  "fortune": "Your signature is your word. Keep both clean.",
+  "image": "fortunes/cards/23.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

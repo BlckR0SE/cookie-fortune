@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "gen:fortunes": "node scripts/gen-fortunes.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview"
   },

@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #51",
+  "fortune": "The explorer shows your tx. Only you show your character.",
+  "image": "fortunes/cards/51.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #1",
+  "fortune": "The slot you occupy was empty a moment ago. Luck notices.",
+  "image": "fortunes/cards/1.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

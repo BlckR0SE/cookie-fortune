@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #38",
+  "fortune": "The chain is public. Your intentions may stay private.",
+  "image": "fortunes/cards/38.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #55",
+  "fortune": "Your private key is safe. Your heart is another matter.",
+  "image": "fortunes/cards/55.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

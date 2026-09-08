@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #0",
+  "fortune": "A door marked 'exit' is also a door marked 'begin'.",
+  "image": "fortunes/cards/0.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

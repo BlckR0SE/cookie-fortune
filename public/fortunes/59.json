@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #59",
+  "fortune": "Small wins compound. So do small kindnesses.",
+  "image": "fortunes/cards/59.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

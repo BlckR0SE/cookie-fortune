@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #37",
+  "fortune": "One day your net worth matches your net optimism.",
+  "image": "fortunes/cards/37.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

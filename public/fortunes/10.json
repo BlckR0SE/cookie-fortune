@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #10",
+  "fortune": "Your bags are heavy because they carry tomorrow.",
+  "image": "fortunes/cards/10.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

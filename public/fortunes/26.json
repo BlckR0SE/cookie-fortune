@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #26",
+  "fortune": "A dip is just the market taking a breath.",
+  "image": "fortunes/cards/26.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

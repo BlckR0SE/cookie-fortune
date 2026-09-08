@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #6",
+  "fortune": "Patience is a validator that never sleeps.",
+  "image": "fortunes/cards/6.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

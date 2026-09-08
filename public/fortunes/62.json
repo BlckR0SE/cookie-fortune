@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #62",
+  "fortune": "Your luck is loading. Do not refresh.",
+  "image": "fortunes/cards/62.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}

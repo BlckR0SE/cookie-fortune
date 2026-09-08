@@ -1,0 +1,11 @@
+{
+  "name": "Fortune #17",
+  "fortune": "Beware of FUD wearing a friendly smile.",
+  "image": "fortunes/cards/17.svg",
+  "attributes": [
+    {
+      "trait_type": "rarity",
+      "value": "common"
+    }
+  ]
+}
