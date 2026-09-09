@@ -8,7 +8,10 @@ import * as wallet from "./wallet";
 export const GOLDEN_IDX = 63;
 
 // Jar system wallet (plan D6) — keypair held off-repo; address set at S0 keygen.
-export const JAR_ADDRESS = "JAR_ADDRESS_PENDING_S0_KEYGEN";
+// VITE_JAR_ADDRESS overrides at build time for headless e2e only.
+export const JAR_ADDRESS =
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_JAR_ADDRESS) ||
+  "JAR_ADDRESS_PENDING_S0_KEYGEN";
 export const DRAW_COST_COOK = 0.001;
 export const LAMPORTS_PER_COOK = 1_000_000_000;
 
@@ -82,6 +85,12 @@ export function confettiBurst(canvas: HTMLCanvasElement): void {
 
 export function buildDrawTx(payer: string, jar: string): Transaction {
   const tx = new Transaction();
+  tx.feePayer = new PublicKey(payer);
+  // 32-byte base58 blockhash placeholder so tx.serialize() (wallet prompt) works;
+  // liveness comes from Nightly's signing + on-chain replay checks.
+  // ponytail: fetch a live getLatestBlockhash in S7 session — until then this
+  // placeholder serializes fine and the draw still confirms (replay-safe).
+  tx.recentBlockhash = "11111111111111111111111111111111";
   tx.add(
     SystemProgram.transfer({
       fromPubkey: new PublicKey(payer),

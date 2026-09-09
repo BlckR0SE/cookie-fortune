@@ -1,13 +1,15 @@
-// CrackPanel — THE hero moment. State machine keyed to REAL tx events:
-// idle → signing (squeeze + pulse ring) → confirming (crumble shake, live slot)
-// → revealing → revealed (fortune card flip-in; golden = confetti + gold wash).
-// GSAP drives transforms only. Reduced motion: crossfade path, content identical.
+// CrackPanel — THE RECEIPT hero. State machine keyed to REAL tx events
+// (idle → signing → confirming → revealing → revealed, via runDraw(onStage,onSlot)):
+//   signing    squeeze pulse + typed status
+//   confirming micro-shake + live slot digits
+//   revealing  shared-contour tear (halves ±58px/∓9°), crumbs, slip prints out,
+//              printline fills dot-by-dot → PRINTED ✓ (never a progress bar)
+//   revealed   typewriter fortune (26ms/char), stamp slam, golden = gold ink
+//              + GOLDEN №63 stamp + confetti. Reduced motion: state swaps only.
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as wallet from "../lib/wallet";
 import { gsap, useGSAP } from "../lib/motion-g";
-import { Magnetic } from "./Magnetic";
-import { useReveals } from "./Reveals";
 import {
   DRAW_COST_COOK,
   GOLDEN_IDX,
@@ -23,30 +25,29 @@ import { insufficientGasError, mapWalletError, useSetError, type AppError } from
 
 type Phase = "idle" | "signing" | "confirming" | "revealing" | "revealed";
 
+// Tear contour: defined ONCE (8-segment polyline, §12.3); the right clip-path is
+// the SAME point list mirrored (240−x) with x pulled 2px inward → 2px overlap along
+// the seam fills the anti-alias hairline without a visible double-jag.
+const TEAR_L = "M0 0 H120 L110 30 L122 58 L108 88 L120 118 L110 148 L122 178 L110 208 L119 240 H0 Z";
+const TEAR_R = "M240 0 H120 L112 30 L124 58 L110 88 L122 118 L112 148 L124 178 L112 208 L121 240 H240 Z";
+
 export function CrackPanel({ onRevealed }: { onRevealed?: () => void }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [slot, setSlot] = useState<number | null>(null);
   const [result, setResult] = useState<{ sig: string; slot: number; idx: number; fortune: Fortune; golden: boolean } | null>(null);
   const [inlineErr, setInlineErr] = useState<AppError | null>(null);
-  const [balance, setBalance] = useState<number | null>(null);
   const addr = useRef<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const stageRef = useRef<HTMLElement>(null);
+  const zoneRef = useRef<HTMLElement>(null);
   const cookieRef = useRef<HTMLButtonElement>(null);
-  const halvesRef = useRef<HTMLDivElement>(null);
-  const paperRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
   const setError = useSetError();
 
-  useReveals(stageRef);
-
-  // address via wallet event (no polling); preflight balance check
+  // address via wallet event (no polling); balance cache for preflight display
   useEffect(
     () =>
       wallet.onWalletEvent((e) => {
         if (e.type === "connected") {
           addr.current = e.address;
-          connection.getBalance(new PublicKey(e.address)).then(setBalance).catch(() => setBalance(null));
         }
         if (e.type === "disconnected") {
           addr.current = null;
@@ -60,34 +61,18 @@ export function CrackPanel({ onRevealed }: { onRevealed?: () => void }) {
 
   // preload 64 fortune JSONs at idle — reveal is instant
   useEffect(() => {
-    preloadFortunes().catch((e) => setError({
-      variant: "rpc-unreachable", placement: "banner",
-      proverb: "The bakery's phone line is busy.",
-      truth: "(Fortune pack failed to load — retrying is safe.)",
-      action: { label: "Retry now", onClick: () => preloadFortunes().catch(() => {}) },
-      code: String(e),
-    }));
+    preloadFortunes().catch((e) =>
+      setError({
+        variant: "rpc-unreachable",
+        placement: "banner",
+        proverb: "The bakery's phone line is busy.",
+        truth: "(Fortune pack failed to load — retrying is safe.)",
+        action: { label: "Retry now", onClick: () => preloadFortunes().catch(() => {}) },
+        code: String(e),
+      }),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // idle: breathing cookie + cursor parallax (desktop). Subtle, transform-only.
-  useGSAP(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!reduced && cookieRef.current) {
-      gsap.to(cookieRef.current, { y: -10, duration: 2.2, ease: "sine.inOut", yoyo: true, repeat: -1 });
-    }
-    if (!reduced && stageRef.current && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      const el = stageRef.current;
-      const move = (e: PointerEvent) => {
-        const r = el.getBoundingClientRect();
-        const dx = (e.clientX - (r.left + r.width / 2)) / r.width;
-        const dy = (e.clientY - (r.top + r.height / 2)) / r.height;
-        gsap.to(".cookie-stage-wrap", { x: dx * 18, y: dy * 12, rotate: dx * 3, duration: 0.8, ease: "power3.out" });
-      };
-      el.addEventListener("pointermove", move, { passive: true });
-      return () => el.removeEventListener("pointermove", move);
-    }
-  }, { scope: stageRef });
 
   const crack = useCallback(async () => {
     const address = addr.current;
@@ -95,15 +80,14 @@ export function CrackPanel({ onRevealed }: { onRevealed?: () => void }) {
       setError(mapWalletError(Object.assign(new Error("connect first"), { code: "not-installed" })));
       return;
     }
-    // preflight: draw cost + fee buffer, BEFORE wallet prompt (plan S8)
-    let bal: number | null = null;
+    // preflight: draw cost + fee buffer, BEFORE wallet prompt
+    let bal: number;
     try {
       bal = await connection.getBalance(new PublicKey(address));
     } catch {
       setError(insufficientGasError(NaN, DRAW_COST_COOK));
       return;
     }
-    setBalance(bal / 1e9);
     const need = DRAW_COST_COOK + 0.0001;
     if (bal / 1e9 < need) {
       setInlineErr(insufficientGasError(bal / 1e9, need));
@@ -119,37 +103,37 @@ export function CrackPanel({ onRevealed }: { onRevealed?: () => void }) {
         (stage) => setPhase(stage),
         (s) => setSlot(s),
       );
-      // confirmed callback → split ≤200ms (phase swap is sync here), reveal ≤900ms
       const { idx, fortune } = fortuneForSlot(await preloadFortunes(), confirmed);
       setPhase("revealing");
       setResult({ sig, slot: confirmed, idx, fortune, golden: idx === GOLDEN_IDX });
-      requestAnimationFrame(() => paperRef.current?.classList.add("out"));
       window.setTimeout(() => {
         setPhase("revealed");
-        if (idx === GOLDEN_IDX) canvasRef.current && confettiBurst(canvasRef.current);
+        if (idx === GOLDEN_IDX && canvasRef.current) confettiBurst(canvasRef.current);
         window.dispatchEvent(new Event("balance-refresh"));
         onRevealed?.();
-      }, prefersReducedMotion() ? 150 : 750);
+      }, prefersReducedMotion() ? 150 : 2050); // tear 700ms + slip-in 450ms + printline ~1s
     } catch (e) {
-      setPhase("idle"); // shake stops immediately, stage returns to idle after dismiss
+      setPhase("idle"); // shake stops immediately
       const err = e as { code?: string; message?: string };
       const msg = err?.message ?? String(e);
       if (err?.code === "user-reject" || /reject|denied|cancel/i.test(msg)) {
         setError(mapWalletError(e));
       } else if (err?.code === "confirm-timeout" || /blockhash/i.test(msg)) {
         setError({
-          variant: "blockhash-expired", placement: "inline",
+          variant: "blockhash-expired",
+          placement: "inline",
           proverb: "The dough went stale.",
-          truth: "(Blockhash expired — retrying…)",
+          truth: "(Blockhash expired — retrying is safe.)",
           action: { label: "Crack again" },
           code: msg,
         });
       } else {
         setError({
-          variant: "rpc-unreachable", placement: "banner",
+          variant: "rpc-unreachable",
+          placement: "banner",
           proverb: "The bakery's phone line is busy.",
           truth: "(Draw failed — retrying is safe.)",
-          action: { label: "Crack again" },
+          action: { label: "Retry now" },
           code: msg,
         });
       }
@@ -157,136 +141,188 @@ export function CrackPanel({ onRevealed }: { onRevealed?: () => void }) {
   }, [onRevealed, setError]);
 
   // ---- GSAP choreography, driven purely by `phase` (real tx events) ----
-  useGSAP(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
-    const cookie = cookieRef.current;
-    const paper = paperRef.current;
-    const card = cardRef.current;
-    const halves = halvesRef.current;
-    const halo = stageRef.current?.querySelector(".cookie-halo") ?? null;
-
-    if (phase === "signing" && cookie) {
-      // squeeze: cookie compresses under pressure, halo pulses (anticipation)
-      gsap.timeline()
-        .to(cookie, { scale: 0.94, rotate: -2, duration: 0.25, ease: "power2.in" })
-        .to(cookie, { scale: 0.96, rotate: 1.5, duration: 0.2, yoyo: true, repeat: -1, ease: "sine.inOut" });
-      if (halo) gsap.fromTo(halo, { opacity: 0, scale: 0.85 }, { opacity: 0.5, scale: 1.15, duration: 0.9, repeat: -1, yoyo: true, ease: "sine.inOut" });
-    }
-    if (phase === "confirming" && cookie) {
-      // crumble: violent micro-shake (slot confirmation = <1s of pure tension)
-      gsap.killTweensOf([cookie, ...(halo ? [halo] : [])]);
-      gsap.to(cookie, { x: "random(-4,4)", y: "random(-3,3)", rotate: "random(-3,3)", duration: 0.06, repeat: -1, ease: "none" });
-      if (halo) gsap.to(halo, { opacity: 0.7, scale: 1.3, duration: 0.4 });
-    }
-    if (phase === "revealing" && halves) {
-      // THE CRACK: snap apart + crumbs burst + paper slips out
-      gsap.killTweensOf([cookie, ...(halo ? [halo] : [])]);
-      gsap.timeline()
-        .to(cookie ?? halves, { scale: 1.12, duration: 0.1, ease: "power4.in" })
-        .to(halo ?? halves, { opacity: 0, scale: 1.6, duration: 0.3 }, "<")
-        .fromTo(".half-l", { xPercent: 0, rotate: 0 }, { xPercent: -58, rotate: -16, y: 26, duration: 0.7, ease: "power3.out" }, "<")
-        .fromTo(".half-r", { xPercent: 0, rotate: 0 }, { xPercent: 58, rotate: 16, y: 30, duration: 0.7, ease: "power3.out" }, "<")
-        .fromTo(".crumb", { opacity: 0, scale: 0.3 }, {
-          opacity: 1, scale: 1,
-          x: (i) => (i % 2 ? 1 : -1) * (70 + (i % 5) * 34),
-          y: (i) => -40 + (i % 4) * 44,
-          rotate: () => gsap.utils.random(-160, 160),
-          duration: 0.8, stagger: 0.015, ease: "power2.out",
-        }, "<")
-        .fromTo(paper ?? halves, { yPercent: 60, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: "back.out(1.6)" }, "-=0.35");
-    }
-    if (phase === "revealed" && card) {
-      // fortune card: paper flip-in; golden gets a light-sweep
-      gsap.fromTo(card,
-        { rotateY: -70, opacity: 0, y: 30 },
-        { rotateY: 0, opacity: 1, y: 0, duration: 0.7, ease: "power4.out" });
-      if (result?.golden) {
-        gsap.fromTo(".gold-sweep", { xPercent: -120 }, { xPercent: 120, duration: 1.1, ease: "power2.inOut" });
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return;
+      const cookie = cookieRef.current;
+      if (phase === "signing" && cookie) {
+        // squeeze: cookie compresses under pressure (anticipation)
+        gsap.killTweensOf(cookie);
+        gsap
+          .timeline()
+          .to(cookie, { scale: 0.94, duration: 0.25, ease: "power2.in" })
+          .to(cookie, { scale: 0.96, duration: 0.2, yoyo: true, repeat: -1, ease: "sine.inOut" });
       }
-    }
-  }, { scope: stageRef, dependencies: [phase, result] });
+      if (phase === "confirming" && cookie) {
+        // micro-shake ±3px/60ms — sub-second chain = sub-second shake
+        gsap.killTweensOf(cookie);
+        gsap.to(cookie, { x: "random(-3,3)", y: "random(-3,3)", duration: 0.06, repeat: -1, ease: "none" });
+      }
+      if (phase === "revealing" && cookie) {
+        gsap.killTweensOf(cookie);
+        gsap.set(cookie, { scale: 1, x: 0, y: 0, rotate: 0 });
+      }
+      if (phase === "revealed" && result?.golden && zoneRef.current) {
+        // golden: nothing extra in GSAP — confetti (canvas) + gold ink + stamp carry it
+      }
+    },
+    { scope: zoneRef, dependencies: [phase] },
+  );
 
   const busy = phase === "signing" || phase === "confirming" || phase === "revealing";
-  const statusChip =
-    phase === "signing" ? "Waiting for your signature…" :
-    phase === "confirming" ? slot != null ? `Confirming · slot ${slot}` : "Confirming on Cookie Chain…" :
-    phase === "revealing" ? "Confirmed — opening…" : null;
+  const status =
+    phase === "signing" ? "AWAITING SIGNATURE — DO NOT LEAVE THE COUNTER" :
+    phase === "confirming" ? slot != null ? `CONFIRMING · SLOT ${slot.toLocaleString()}` : "CONFIRMING" :
+    phase === "revealing" ? "CONFIRMED ✓ — TEARING…" :
+    phase === "revealed" ? "FORTUNE PRINTED — KEEP THIS SLIP" :
+    "FEED ME A COOKIE";
+  const cursorOn = phase === "idle" || phase === "signing" || phase === "confirming";
 
-  const showingRevealed = phase === "revealed" && result != null;
+  const showingSlip = (phase === "revealing" || phase === "revealed") && result != null;
 
   return (
-    <section ref={stageRef} className="stage" id="stage" aria-label="Crack a cookie">
+    <section ref={zoneRef} className={`crack${phase === "revealing" || phase === "revealed" ? " torn" : ""}`} id="crack" aria-label="Crack a cookie">
       <canvas ref={canvasRef} className="confetti-canvas" aria-hidden />
-      {!showingRevealed ? (
-        <>
-          <div className="cookie-stage-wrap">
-            <div className={`cookie-halo`} aria-hidden />
-            <div className="cookie-wrap" ref={halvesRef}>
-              <img src={`${import.meta.env.BASE_URL}steam.svg`} alt="" aria-hidden className="steam" />
-              {result ? (
-                <>
-                  <img src={`${import.meta.env.BASE_URL}cookie-half-left.svg`} alt="" aria-hidden className="half-l" />
-                  <img src={`${import.meta.env.BASE_URL}cookie-half-right.svg`} alt="" aria-hidden className="half-r" />
-                  {[...Array(8)].map((_, i) => (
-                    <img key={i} src={`${import.meta.env.BASE_URL}crumb.svg`} alt="" aria-hidden className={`crumb c${i + 1}`} />
-                  ))}
-                </>
-              ) : (
-                <Magnetic strength={0.25}>
-                  <button
-                    ref={cookieRef}
-                    className="cookie-btn"
-                    onClick={crack}
-                    disabled={busy}
-                    data-cursor="crack it"
-                    aria-label="Crack a cookie for 0.001 COOK"
-                  >
-                    <img src={`${import.meta.env.BASE_URL}cookie-whole.svg`} alt="" aria-hidden className="cookie-whole" />
-                  </button>
-                </Magnetic>
-              )}
-              <div ref={paperRef} className="paper-slip" aria-hidden={phase !== "revealed"}>
-                <img src={`${import.meta.env.BASE_URL}paper-slip.svg`} alt="" aria-hidden />
-              </div>
-            </div>
-          </div>
-          <p className="proverb" data-reveal>{result ? result.fortune.fortune : "Your fortune awaits."}</p>
-          <div className="status-row" role="status" aria-live="polite">
-            {statusChip && <span className="chip live">{statusChip}</span>}
-            <span className="chip">Crack a cookie · {DRAW_COST_COOK} COOK</span>
-            {balance != null && <span className="chip num">balance {balance.toFixed(4)} COOK</span>}
-          </div>
-        </>
-      ) : (
-        result && (
-          <div className="on-paper reveal-wrap">
-            <span className="gold-sweep" aria-hidden />
-            <div ref={cardRef} className={`on-paper ${result.golden ? "card-golden" : "card-fortune"} reveal-in`} role="status">
-              <p className="fortune-text">{result.fortune.fortune}</p>
-              <div className="card-meta">
-                <span className="num">Serial #{result.slot}</span>
-                <span className="num">slot {result.slot} · idx {result.idx}</span>
-                {result.golden && <span className="gold-badge">50% of today's pot is yours — payout within 24h, tx will appear here.</span>}
-                <a className="link-explorer" href={txUrl(result.sig)} target="_blank" rel="noopener" data-cursor="verify">Draw tx on Cookiescan</a>
-              </div>
-              <div style={{ marginTop: 16 }}>
-                <button className="btn-ghost" onClick={() => { setResult(null); setPhase("idle"); setSlot(null); }}>Crack another</button>
-              </div>
-            </div>
-          </div>
-        )
+      <p className="status" role="status" aria-live="polite">
+        {status}
+        {cursorOn && <span className="cur">█</span>}
+      </p>
+
+      <div className="cookie-wrap" aria-hidden={showingSlip || undefined}>
+        <svg className="cookie-svg" viewBox="0 0 240 240" aria-hidden="true">
+          <defs>
+            <pattern id="dts" width="6" height="6" patternUnits="userSpaceOnUse">
+              <circle cx="1.6" cy="1.6" r="1.15" fill="var(--paper)" />
+            </pattern>
+            <clipPath id="cL"><path d={TEAR_L} /></clipPath>
+            <clipPath id="cR"><path d={TEAR_R} /></clipPath>
+            <g id="cookieBody">
+              <circle cx="120" cy="120" r="102" fill="var(--ink)" />
+              <circle cx="120" cy="120" r="102" fill="url(#dts)" />
+              <circle cx="88" cy="86" r="9" fill="var(--paper)" />
+              <circle cx="150" cy="72" r="7" fill="var(--paper)" />
+              <circle cx="170" cy="132" r="10" fill="var(--paper)" />
+              <circle cx="102" cy="152" r="8" fill="var(--paper)" />
+              <circle cx="136" cy="178" r="6" fill="var(--paper)" />
+              <circle cx="66" cy="122" r="6" fill="var(--paper)" />
+              <path d="M120 18 L120 222" stroke="var(--paper)" strokeWidth="2" strokeDasharray="5 6" opacity=".55" />
+            </g>
+          </defs>
+          {!showingSlip ? (
+            <g className="cookie-whole"><use href="#cookieBody" /></g>
+          ) : (
+            <>
+              <g className="half half-l" clipPath="url(#cL)"><use href="#cookieBody" /></g>
+              <g className="half half-r" clipPath="url(#cR)"><use href="#cookieBody" /></g>
+              <g fill="var(--ink)">
+                <circle className="crumb" style={{ "--cx": "-70px", "--cy": "34px", "--cr": "-140deg" } as React.CSSProperties} cx="60" cy="150" r="5" />
+                <circle className="crumb" style={{ "--cx": "-96px", "--cy": "8px", "--cr": "80deg" } as React.CSSProperties} cx="96" cy="176" r="4" />
+                <circle className="crumb" style={{ "--cx": "-58px", "--cy": "66px", "--cr": "40deg" } as React.CSSProperties} cx="80" cy="120" r="3.4" />
+                <circle className="crumb" style={{ "--cx": "66px", "--cy": "22px", "--cr": "120deg" } as React.CSSProperties} cx="176" cy="160" r="5" />
+                <circle className="crumb" style={{ "--cx": "96px", "--cy": "52px", "--cr": "-60deg" } as React.CSSProperties} cx="160" cy="190" r="4" />
+                <circle className="crumb" style={{ "--cx": "74px", "--cy": "78px", "--cr": "160deg" } as React.CSSProperties} cx="150" cy="108" r="3.2" />
+              </g>
+            </>
+          )}
+        </svg>
+      </div>
+
+      <div className="crack-actions">
+        <button className="btn crack-btn" onClick={crack} disabled={busy} aria-label="Crack a cookie for 0.001 COOK">
+          {result ? "CRACK ONE" : "CRACK ONE"}
+        </button>
+        {result && phase === "revealed" && (
+          <button className="btn btn-ghosty again on" onClick={() => { setResult(null); setPhase("idle"); setSlot(null); }}>
+            CRACK ANOTHER
+          </button>
+        )}
+      </div>
+      <p className="price-note">1 × FORTUNE ····· {DRAW_COST_COOK} COOK</p>
+
+      {result && (
+        <div className={`slip printing${result.golden ? " golden" : ""}`}>
+          <Printstat done={phase === "revealed"} />
+          <div className="row"><span className="k">ITEM</span><span className="dots" /><span className="v">1 × FORTUNE</span></div>
+          <div className="row"><span className="k">PAID</span><span className="dots" /><span className="v">{DRAW_COST_COOK} COOK</span></div>
+          <div className="row"><span className="k">SERIAL</span><span className="dots" /><span className="v">№ {result.slot}</span></div>
+          <FortuneText text={result.fortune.fortune} type={phase === "revealed"} />
+          <div className="row"><span className="k">CUSTODY</span><span className="dots" /><span className="v">YOURS · ON-CHAIN</span></div>
+          <p className="verify">
+            <a href={txUrl(result.sig)} target="_blank" rel="noopener">
+              {result.golden ? "VERIFY GOLDEN DRAW ON COOKIESCAN ↗" : "VERIFY DRAW TX ON COOKIESCAN ↗"}
+            </a>
+          </p>
+          <span className={`stamp on${result.golden ? " gold" : ""}`}>{result.golden ? "GOLDEN №63" : "PAID"}</span>
+        </div>
       )}
+
       {inlineErr && (
-        <div className="error-inline" role="alert">
-          <p className="error-proverb">{inlineErr.proverb}</p>
-          <p className="error-truth">{inlineErr.truth}</p>
-          <a className="link-explorer" href="#get-gas">Get gas ↓</a>
+        <div className="err on" role="alert">
+          <span className="stamp on">VOID</span>
+          <p className="proverb">{inlineErr.proverb}</p>
+          <p className="truth">{inlineErr.truth}</p>
+          <a className="btn btn-ghosty" href="#jar">
+            Get gas ↓
+          </a>
           {inlineErr.extraLinks?.map((l) => (
-            <a key={l.href} className="link-explorer" href={l.href} target="_blank" rel="noopener">{l.label}</a>
+            <a key={l.href} className="err-link" href={l.href} target="_blank" rel="noopener">{l.label}</a>
           ))}
         </div>
       )}
     </section>
   );
+}
+
+// Printline driver (~25 lines, mirrors the typewriter pattern): PRINTING + dots
+// fill char-by-char (55ms) + blinking cursor → PRINTING ····· ··· PRINTED ✓,
+// then stays printed. Reduced motion: PRINTED ✓ immediately.
+function Printstat({ done }: { done: boolean }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (prefersReducedMotion()) {
+      el.textContent = "PRINTED ✓";
+      el.classList.add("done");
+      return;
+    }
+    let i = 0;
+    el.innerHTML = `PRINTING <span class="cur">█</span>`;
+    const iv = window.setInterval(() => {
+      i++;
+      if (i >= 26) {
+        window.clearInterval(iv);
+        el.textContent = "PRINTING ····· ··· PRINTED ✓";
+        el.classList.add("done");
+      } else {
+        el.innerHTML = `PRINTING ${"·".repeat(i)}<span class="cur">█</span>`;
+      }
+    }, 55);
+    return () => window.clearInterval(iv);
+  }, []);
+  useEffect(() => {
+    if (done) ref.current?.classList.add("done");
+  }, [done]);
+  return <p ref={ref} className="printstat" aria-live="polite" />;
+}
+
+// Typewriter: 26ms/char once `type` flips true; reduced motion prints instantly.
+function FortuneText({ text, type }: { text: string; type: boolean }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!type || prefersReducedMotion()) {
+      el.textContent = text;
+      return;
+    }
+    let i = 0;
+    el.textContent = "";
+    const iv = window.setInterval(() => {
+      el.textContent = text.slice(0, ++i);
+      if (i >= text.length) window.clearInterval(iv);
+    }, 26);
+    return () => window.clearInterval(iv);
+  }, [text, type]);
+  return <p ref={ref} className="fortune-text" />;
 }

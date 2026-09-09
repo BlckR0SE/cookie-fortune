@@ -1,5 +1,0 @@
-<!-- One crumb, instanced 8x with CSS transforms. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12">
-  <path d="M6 1.5c2.6 0 4.6 2 4.6 4.4S8.6 10.6 6 10.6 1.4 8.6 1.4 5.9 3.4 1.5 6 1.5z" fill="#C98A2E"/>
-  <circle cx="4.4" cy="4.4" r="1.4" fill="#E8A25C"/>
-</svg>

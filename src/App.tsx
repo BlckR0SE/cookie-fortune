@@ -1,44 +1,56 @@
+// App — THE RECEIPT (design_v2 §12): printer mouth (sticky) → receipt sheet.
+// ≥1100px: full-bleed 2-col ledger grid (.main-cols: crack deck left, archive
+// right) + GOLDEN JAR bottom strip; single column below. Native scroll — no Lenis.
 import { WalletHeader } from "./components/WalletHeader";
 import { CrackPanel } from "./components/CrackPanel";
 import { GalleryPanel } from "./components/GalleryPanel";
 import { RafflePanel } from "./components/RafflePanel";
 import { ErrorPanel } from "./components/ErrorPanel";
-import { Cursor } from "./components/Cursor";
-import { SmoothScroll } from "./components/SmoothScroll";
-import { Intro } from "./components/Intro";
-import { useReveals } from "./components/Reveals";
-import { useRef } from "react";
+
+const TICKER = "CRACK A COOKIE · KEEP THE FORTUNE · ON-CHAIN · 0.001 COOK · GOLDEN JAR DAILY · ";
 
 export default function App() {
-  const appRef = useRef<HTMLElement>(null);
-  useReveals(appRef);
-
   return (
     <>
-      <SmoothScroll />
-      <Cursor />
-      <Intro />
-      <div className="marquee" aria-hidden>
-        <div className="marquee-track">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <span key={i}>crack a cookie · keep the fortune · on-chain ·&nbsp;</span>
-          ))}
+      <main className="receipt" id="top">
+        <div className="mouth" aria-hidden="true">
+          <div className="mouth-row">
+            <span className="led" />
+            <span className="mouth-model">CF-RECEIPT·9000</span>
+            <div className="slit">
+              <div className="slit-track">
+                <span>{TICKER.repeat(4)}</span>
+                <span>{TICKER.repeat(4)}</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <main className="app" id="top">
-        <WalletHeader />
-        <ErrorPanel />
-        <CrackPanel />
-        <GalleryPanel />
+
+        <div className="rc main-cols">
+          <div className="col-left">
+            <WalletHeader />
+            <ErrorPanel />
+            <div className="perf"><span className="lbl">CRACK DECK</span></div>
+            <CrackPanel />
+          </div>
+          <div className="col-right">
+            <GalleryPanel />
+          </div>
+        </div>
+
+        <div className="perf"><span className="lbl">GOLDEN JAR</span></div>
         <RafflePanel />
-        <footer className="footer" data-reveal>
-          <nav aria-label="Footer">
-            <a href="https://github.com/BlckR0SE/cookie-fortune" target="_blank" rel="noopener">repo</a>
-            <a href="https://cookiescan.io" target="_blank" rel="noopener">explorer</a>
-            <a href="#raffle">jar</a>
+
+        <footer className="rc-foot">
+          <div className="barcode" aria-hidden="true" />
+          <p className="fine">FORTUNES ARE ON-CHAIN · VERIFY EVERY CRUMB</p>
+          <nav className="foot-links" aria-label="Footer">
+            <a href="https://github.com/BlckR0SE/cookie-fortune" target="_blank" rel="noopener">REPO</a>
+            <a href="https://cookiescan.io" target="_blank" rel="noopener">COOKIESCAN</a>
+            <a href="#jar">THE JAR</a>
           </nav>
-          fortunes are on-chain · verify every tx on cookiescan.io
         </footer>
+        <div className="zigzag" aria-hidden="true" />
       </main>
     </>
   );

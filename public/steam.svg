@@ -1,5 +1,0 @@
-<!-- Two steam wisps, dashoffset-animated in CSS. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 90" class="steam">
-  <path class="wisp w1" d="M26 84c-8-14 8-20 0-34s8-20 0-32" fill="none" stroke="#C9B39A" stroke-width="4" stroke-linecap="round"/>
-  <path class="wisp w2" d="M54 84c8-14-8-20 0-34s-8-20 0-32" fill="none" stroke="#C9B39A" stroke-width="4" stroke-linecap="round"/>
-</svg>

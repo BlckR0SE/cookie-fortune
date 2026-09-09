@@ -1,30 +1,32 @@
-// RafflePanel — golden-pot ledger. Jar balance / today's pot / golden status tiles,
-// past payouts list, manual-payout disclosure (plan D6), "Get gas" links.
-// Poll cadence owned by S7 session (dispatches "balance-refresh"); passive layer.
-import { useEffect, useRef, useState } from "react";
+// RafflePanel — GOLDEN JAR · DAILY as a full-measure bottom strip (jar-strip).
+// Jar amount row + hand-tally marks (5th struck) + rules fine print.
+// Jar balance via one getBalance; refresh on balance-refresh event.
+// ponytail: "tickets today" count needs the S7 draw-index program; until then the
+// tally counts this session's confirmed cracks (real tx events, not fake data).
+import { useEffect, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { JAR_ADDRESS, LAMPORTS_PER_COOK } from "../lib/crack";
 import { connection } from "../lib/rpc";
-import { useReveals } from "./Reveals";
 
 export function RafflePanel() {
   const [jar, setJar] = useState<number | null>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-  useReveals(sectionRef, [jar]);
+  const [cracks, setCracks] = useState(0);
 
   useEffect(() => {
     let dead = false;
     const load = async () => {
       try {
-        const pub = new PublicKey(JAR_ADDRESS);
-        const lam = await connection.getBalance(pub);
+        const lam = await connection.getBalance(new PublicKey(JAR_ADDRESS));
         if (!dead) setJar(lam / LAMPORTS_PER_COOK);
       } catch {
         if (!dead) setJar(null);
       }
     };
     load();
-    const h = () => load();
+    const h = () => {
+      load();
+      setCracks((c) => c + 1);
+    };
     window.addEventListener("balance-refresh", h);
     return () => {
       dead = true;
@@ -32,42 +34,22 @@ export function RafflePanel() {
     };
   }, []);
 
-  const noData = jar == null;
+  let marks = "";
+  for (let i = 1; i <= Math.min(cracks, 60); i++) marks += i % 5 === 0 ? "̶ " : "|";
+
   return (
-    <section ref={sectionRef} className="section" id="raffle" aria-label="Today's golden pot">
-      <div className="section-head">
-        <h2 className="display" data-split>Today's golden pot</h2>
+    <section className="sec jar-strip" id="jar" aria-label="Daily golden raffle">
+      <div className="jar-main">
+        <h2>GOLDEN JAR · DAILY</h2>
+        <p className="hint">Golden ticket № 63 · drawn at midnight UTC</p>
+        <div className="row"><span className="k">JAR TODAY</span><span className="dots" /><span className="v">{jar != null ? `${jar.toFixed(4)} COOK` : "—"}</span></div>
+        <p className="tally" aria-label="tickets today">{marks || "—"}</p>
       </div>
-      {noData ? (
-        <p className="muted" data-reveal>The pot fills with every crack.</p>
-      ) : (
-        <>
-          <div className="stat-tiles">
-            <div className="stat-tile" data-reveal>
-              <div className="label">Jar balance</div>
-              <div className="value num">{jar!.toFixed(6)} COOK</div>
-            </div>
-            <div className="stat-tile" data-reveal>
-              <div className="label">Today's pot</div>
-              <div className="value num">— COOK</div>
-              <div className="muted" style={{ fontSize: ".8rem" }}>50% of today's draw revenue (S7 poll lands)</div>
-            </div>
-            <div className="stat-tile" data-reveal>
-              <div className="label">Golden drawn today</div>
-              <div className="value">—</div>
-            </div>
-          </div>
-          <p className="muted" style={{ fontSize: ".85rem" }} data-reveal>
-            v1: payout is sent manually within 24h; every payout tx is listed here and verifiable on Cookiescan.
-          </p>
-          <div className="gas-links" id="get-gas" aria-label="Get gas" data-reveal>
-            <span className="chip">Get gas:</span>
-            <a className="link-explorer" href="https://hyperlane.cookiescan.io" target="_blank" rel="noopener">Bridge guide</a>
-            <a className="link-explorer" href="https://t.me/TheCookieNetChain" target="_blank" rel="noopener">Telegram gas request</a>
-            <a className="link-explorer" href="https://swap.cookiescan.io" target="_blank" rel="noopener">Cookieswap</a>
-          </div>
-        </>
-      )}
+      <p className="raffle-note">
+        GOLDEN DRAW TAKES 50% OF THE JAR.<br />
+        EVERY CRACK ADDS 0.001 · WINNER PAID ≤ 24H.<br />
+        TALLY = TICKETS TODAY. NO TICKET, NO WHINING.
+      </p>
     </section>
   );
 }

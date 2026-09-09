@@ -1,6 +1,0 @@
-<!-- Cream fortune slip: torn top edge, fold lines. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300">
-  <path d="M20 34l14-9 12 8 13-10 12 9 14-8 12 9 13-9 12 8 14-9 12 8 13-9 12 8 14-9 12 8 13-8 12 6v246c0 6-4 10-10 10H30c-6 0-10-4-10-10z" fill="#F6ECD4"/>
-  <path d="M20 34l200 0" stroke="rgba(58,42,26,.15)" stroke-width="2"/>
-  <path d="M48 96h144M48 120h144M48 144h110" stroke="rgba(58,42,26,.18)" stroke-width="3" stroke-linecap="round" fill="none"/>
-</svg>

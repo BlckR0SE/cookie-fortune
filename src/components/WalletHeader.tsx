@@ -1,20 +1,21 @@
-// WalletHeader — sticky, brand left (Fraunces wordmark), right: Connect Nightly
-// (magnetic primary) / wallet-chip (addr · copy · explorer · balance) · disconnect.
-// Balance in COOK 6dp tabular. Triggers: wallet events only, no polling.
+// WalletHeader — receipt masthead + ledger. CUSTOMER row flips NOT SERVED →
+// address on connect; CONNECT NIGHTLY button becomes CUSTOMER SERVED ✓ (disabled).
+// Wallet events only, no polling (balance-refresh event after each draw).
 import { PublicKey } from "@solana/web3.js";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { LAMPORTS_PER_COOK, connection } from "../lib/rpc";
 import * as wallet from "../lib/wallet";
-import { Magnetic } from "./Magnetic";
 import { mapWalletError, useSetError } from "./ErrorPanel";
 
-const EXPLORER = "https://cookiescan.io";
+const SHORT = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;
+const fmt = (d: Date) =>
+  `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")} ` +
+  `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")} UTC`;
 
 export function WalletHeader() {
   const [addr, setAddr] = useState<string | null>(wallet.getPublicKey());
   const [busy, setBusy] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
-  const [copied, setCopied] = useState(false);
   const setError = useSetError();
 
   useEffect(
@@ -34,7 +35,6 @@ export function WalletHeader() {
     [],
   );
 
-  // balance on connect + after each draw (custom "balance-refresh" event, not a poll loop)
   useEffect(() => {
     if (!addr) return;
     let dead = false;
@@ -54,8 +54,7 @@ export function WalletHeader() {
   const toggle = async () => {
     setBusy(true);
     try {
-      if (addr) await wallet.disconnect();
-      else await wallet.connect();
+      await wallet.connect();
     } catch (e) {
       setError(mapWalletError(e));
     } finally {
@@ -63,42 +62,32 @@ export function WalletHeader() {
     }
   };
 
-  const copy = useCallback(() => {
-    if (!addr) return;
-    navigator.clipboard.writeText(addr).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1200);
-    });
-  }, [addr]);
-
-  const short = addr ? `${addr.slice(0, 4)}…${addr.slice(-4)}` : null;
   return (
-    <header className="site-header">
-      <a className="brand" href="#top" aria-label="Cookie Fortune home" data-cursor="home">
-        <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" aria-hidden />
-        <span className="brand-word">Cookie&nbsp;Fortune</span>
-      </a>
-      <div className="header-right">
-        {short ? (
-          <>
-            <span className="wallet-chip">
-              <span title={addr!} aria-label={`Wallet ${addr}`}>{short}</span>
-              <button className="chip-btn" onClick={copy} aria-label={copied ? "Address copied" : "Copy full wallet address"}>
-                {copied ? "Copied" : "Copy"}
-              </button>
-              <a href={`${EXPLORER}/account/${addr}`} target="_blank" rel="noopener" aria-label="View wallet on Cookiescan">Explorer</a>
-              {balance != null && <span className="balance num" aria-label="Wallet balance in COOK">{balance.toFixed(6)} COOK</span>}
-            </span>
-            <button className="btn-ghost" onClick={toggle} disabled={busy}>Disconnect</button>
-          </>
-        ) : (
-          <Magnetic strength={0.35}>
-            <button className="btn-primary" onClick={toggle} disabled={busy}>
-              {busy ? "Connecting…" : "Connect Nightly"}
-            </button>
-          </Magnetic>
-        )}
+    <header>
+      <div className="mast">
+        <h1>COOKIE FORTUNE</h1>
+        <p className="sub">On-chain bakery · Cookie Chain · Est. slot 0</p>
       </div>
+      <hr className="rule" />
+      <div className="ledger-cols">
+        <div>
+          <div className="row"><span className="k">RECEIPT</span><span className="dots" /><span className="v">№ CF-000417</span></div>
+          <div className="row"><span className="k">DATE</span><span className="dots" /><span className="v">{fmt(new Date())}</span></div>
+        </div>
+        <div>
+          <div className="row">
+            <span className="k">CUSTOMER</span><span className="dots" />
+            <span className="v">{addr ? <span title={addr}>{SHORT(addr)}</span> : "NOT SERVED"}</span>
+          </div>
+          <div className="row">
+            <span className="k">BALANCE</span><span className="dots" />
+            <span className="v">{balance != null ? `${balance.toFixed(4)} COOK` : "—"}</span>
+          </div>
+        </div>
+      </div>
+      <button className="btn btn-block" onClick={toggle} disabled={busy || !!addr} aria-label="Connect Nightly wallet">
+        {addr ? "CUSTOMER SERVED ✓" : busy ? "CONNECTING…" : "CONNECT NIGHTLY"}
+      </button>
     </header>
   );
 }

@@ -1,6 +1,6 @@
-// ErrorPanel — variants per design.md Microcopy table: proverb (Nunito 700) →
-// plain truth (muted) → exactly ONE recovery action. Raw code never hidden.
-// Placement: `inline` under the stage (draw errors), `banner` page-top sticky (RPC/wallet).
+// ErrorPanel — VOID-stamp receipt banner (design_v2 §5e). Stamp glyph VOID, then
+// the standard proverb + truth + action triple. Placement: `inline` renders inside
+// the crack deck (draw errors), `banner` at page top (RPC/wallet). Raw code never hidden.
 import { createContext, useCallback, useContext, useState } from "react";
 
 export type ErrVariant = "insufficient-gas" | "user-rejected" | "blockhash-expired" | "rpc-unreachable" | "mint-failed" | "wallet";
@@ -29,18 +29,18 @@ export const useError = () => useContext(ErrorContext);
 export const useSetError = () => useContext(ErrorContext).setError;
 
 const GAS_LINKS = [
-  { label: "Bridge COOK", href: "https://hyperlane.cookiescan.io" },
-  { label: "Telegram gas request", href: "https://t.me/TheCookieNetChain" },
-  { label: "Cookieswap", href: "https://swap.cookiescan.io" },
+  { label: "BRIDGE COOK", href: "https://hyperlane.cookiescan.io" },
+  { label: "TELEGRAM GAS REQUEST", href: "https://t.me/TheCookieNetChain" },
+  { label: "COOKIESWAP", href: "https://swap.cookiescan.io" },
 ];
 
 export function insufficientGasError(have: number, need: number): AppError {
   return {
     variant: "insufficient-gas",
     placement: "inline",
-    proverb: "A cookie cannot crack an empty jar.",
+    proverb: "The jar is out of reach.",
     truth: `Need ${need.toFixed(4)} COOK, you have ${have.toFixed(4)}.`,
-    action: { label: "Get gas ↓", href: "#get-gas" },
+    action: { label: "GET GAS ↓", href: "#jar" },
     extraLinks: GAS_LINKS,
   };
 }
@@ -52,19 +52,19 @@ export function mapWalletError(e: unknown): AppError {
   if (code === "user-reject")
     return {
       variant: "user-rejected",
-      placement: "inline",
-      proverb: "The cookie chose to stay whole.",
-      truth: "(You cancelled the signature.)",
-      action: { label: "Try again" },
+      placement: "banner",
+      proverb: "You walked away from the counter.",
+      truth: "(You cancelled the signature. Nothing was spent.)",
+      action: { label: "TRY AGAIN" },
       code: raw,
     };
   if (code === "not-installed")
     return {
       variant: "wallet",
       placement: "banner",
-      proverb: "Your fortune awaits a wallet.",
-      truth: "Nightly wallet not detected. Install it and add the Cookie Chain RPC.",
-      action: { label: "Nightly docs", href: "https://docs.nightly.app/docs/solana/solana/detection" },
+      proverb: "The printer jammed.",
+      truth: "(Nightly wallet not detected. Connect a wallet to be served.)",
+      action: { label: "NIGHTLY DOCS", href: "https://docs.nightly.app/docs/solana/solana/detection" },
       code: raw,
     };
   if (code === "wrong-network")
@@ -73,7 +73,7 @@ export function mapWalletError(e: unknown): AppError {
       placement: "banner",
       proverb: "The bakery's phone line is busy.",
       truth: "(Nightly is not on the Cookie Chain network — switch network and retry.)",
-      action: { label: "Retry now" },
+      action: { label: "RETRY NOW" },
       code: raw,
     };
   return {
@@ -81,7 +81,7 @@ export function mapWalletError(e: unknown): AppError {
     placement: "banner",
     proverb: "The bakery's phone line is busy.",
     truth: "(RPC unreachable — retrying is safe.)",
-    action: { label: "Retry now" },
+    action: { label: "RETRY NOW" },
     code: raw,
   };
 }
@@ -92,8 +92,20 @@ export function rpcDownError(detail: string): AppError {
     placement: "banner",
     proverb: "The bakery's phone line is busy.",
     truth: "(RPC unreachable — retrying in 5s.)",
-    action: { label: "Retry now" },
+    action: { label: "RETRY NOW" },
     code: detail,
+  };
+}
+
+// Receipt voice map for blockhash/inline errors (proverbs per design_v2 §7)
+export function blockhashError(msg: string): AppError {
+  return {
+    variant: "blockhash-expired",
+    placement: "inline",
+    proverb: "The dough went stale.",
+    truth: "(Blockhash expired — retrying is safe.)",
+    action: { label: "CRACK AGAIN" },
+    code: msg,
   };
 }
 
@@ -106,20 +118,21 @@ export function ErrorPanel() {
     if (!error.action.href) dismiss();
   };
   return (
-    <div className={error.placement === "banner" ? "error-banner" : "error-inline"} role="alert">
-      <p className="error-proverb">{error.proverb}</p>
-      <p className="error-truth">{error.truth}</p>
+    <div className="err on" role="alert">
+      <span className="stamp on">VOID</span>
+      <p className="proverb">{error.proverb}</p>
+      <p className="truth">{error.truth}</p>
       {error.action.href ? (
-        <a className="link-explorer" href={error.action.href} target={error.action.href.startsWith("http") ? "_blank" : undefined} rel="noopener" onClick={act}>
+        <a className="btn btn-ghosty" href={error.action.href} target={error.action.href.startsWith("http") ? "_blank" : undefined} rel="noopener" onClick={act}>
           {error.action.label}
         </a>
       ) : (
-        <button className="btn-ghost" onClick={act}>{error.action.label}</button>
+        <button className="btn btn-ghosty" onClick={act}>{error.action.label}</button>
       )}
       {error.extraLinks?.map((l) => (
-        <a key={l.href} className="link-explorer" href={l.href} target="_blank" rel="noopener">{l.label}</a>
+        <a key={l.href} className="err-link" href={l.href} target="_blank" rel="noopener">{l.label}</a>
       ))}
-      {error.code && <div className="error-code"> (code: {error.code})</div>}
+      {error.code && <div className="truth">(code: {error.code})</div>}
     </div>
   );
 }

@@ -151,7 +151,11 @@ export async function signAndSend(tx: Transaction): Promise<string> {
   const signTx = signingFeature("solana:signTransaction");
   if (!signTx) throw coded("send-failure", "Nightly solana:signTransaction feature unavailable");
   try {
-    const outputs = await signTx.signTransaction({ account, transaction: tx.serialize() });
+    // Wallet-prompt transport bytes: serialize WITHOUT signature verification —
+    // the payer has not signed yet (Nightly signs these bytes and returns the
+    // signed tx). Same wire format as plain serialize(); only the check is off.
+    const unsigned = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+    const outputs = await signTx.signTransaction({ account, transaction: unsigned });
     const raw = outputs?.[0]?.signedTransaction;
     if (!raw) throw new Error("Nightly returned no signed transaction");
     return await connection.sendRawTransaction(raw, { skipPreflight: false });
